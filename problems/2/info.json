@@ -1,0 +1,11 @@
+{
+  "title": "初识Python - if...else?",
+  "iscases": true,
+  "cases": [
+    [
+      "1234567890",
+      "1234567890"
+    ]
+  ],
+  "timeout": 4
+}

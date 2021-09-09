@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>书写代码 - 任务#{{ task_id }}</title>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/mdui.min.js"></script>
+    <script src="/static/ace/src-min/ace.js"></script>
+    <script src="/static/ace/src-min/ext-language_tools.js" defer></script>
+    <script src="/static/ace/src-min/ext-elastic_tabstops_lite.js" defer></script>
+    <script src="/static/ace/src-min/ext-beautify.js" defer></script>
+    <script src="/static/ace/src-min/ext-code_lens.js" defer></script>
+    <link rel="stylesheet" href="/static/css/mdui.min.css">
+    <script>
+        $(() => {
+            $.get("/api/content/{{ task_id }}", (d) => {
+                $("#descriptions").html(d)
+            })
+            window.update_subtit = () => {
+                $.get("/api/subtitle/{{ task_id }}", (d) => {
+                    $("#subtit").text(d)
+                })
+            }
+            update_subtit()
+            setInterval(update_subtit, 500)
+            window.submit_code = () => {
+                var code = editor.getValue()
+                $("#code-run-status").html(`<h6>正在运行代码...</h6><div class="mdui-progress">
+    <div class="mdui-progress-indeterminate"></div>
+</div>`)
+                // first we format the code
+                // by calling the api
+                $.post("/api/format", {
+                    code: code
+                }, (data) => {
+                    if (data[0]) {
+                        // code validated
+                        editor.setValue(data[1])
+                        editor.selection.clearSelection()
+                        // a POST request to /api/submit.code/{{ task_id }}
+                        $.post("/api/submit.code/{{ task_id }}", {
+                            code: code
+                        }, (d) => {
+                            // It returns a string
+                            $("#code-run-status").html(d)
+                            var div = $("#taskview")[0]
+                            div.scrollTop = div.scrollHeight
+                            delete div
+                            update_subtit()
+                        })
+                    } else {
+                        $("#code-run-status").html("<p>" + data[1].replace(/\&/g, "&amp;").replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + "</p>")
+                        var div = $("#taskview")[0]
+                        div.scrollTop = div.scrollHeight
+                        delete div
+                    }
+                })
+
+            }
+            window.editor = ace.edit("editor")
+            editor.setTheme("ace/theme/chrome")
+            editor.session.setMode("ace/mode/python")
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                useElasticTabstops: true,
+                useWorker: true
+            })
+            window.format_code = () => {
+                var code = editor.getValue()
+                $.post("/api/format", {
+                    code: code
+                }, (data) => {
+                    if (data[0]) {
+                        // code validated
+                        editor.setValue(data[1])
+                        editor.selection.clearSelection()
+                        $("#code-run-status").html("<p>格式化成功</p>")
+                        var div = $("#taskview")[0]
+                        div.scrollTop = div.scrollHeight
+                        delete div
+                    } else {
+                        $("#code-run-status").html("<p>" + data[1].replace(/\&/g, "&amp;").replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + "</p>")
+                        var div = $("#taskview")[0]
+                        div.scrollTop = div.scrollHeight
+                        delete div
+                    }
+                })
+            }
+            editor.commands.addCommand({
+                name: 'formatCode',
+                bindKey: {
+                    win: 'Shift-Alt-F', mac: 'Shift-Option-F',
+                    sender: 'editor|cli'
+                },
+                exec: function (env, args, request) {
+                    format_code()
+                }
+            });
+            editor.on("paste", function (e) {
+                setTimeout(format_code, 500)
+            })
+            document.getElementById('editor').style.fontSize = "14px"
+            var resz = () => {
+                $("#main2").css("height", $(window).innerHeight() + "px")
+            }
+            $(window).resize(resz)
+            resz()
+        })
+    </script>
+</head>
+
+<body>
+    <div class="mdui-container-fluid">
+        <div class="mdui-row" id="main2">
+            <div class="mdui-col-xs-4" style="overflow-x: hidden; overflow-y: auto; height: 100%;" , id="taskview">
+                <button class="mdui-btn mdui-ripple mdui-btn-block" onclick="location.href='/';">返回任务列表</button>
+                <div class="mdui-typo-display-1" style="width: 100%; text-align: center; ">任务#{{ task_id }} {{ metadata['title'] }}</div>
+                <div id="subtit" class="mdui-typo-caption" style="width: 100%; text-align: center;"></div>
+                <div class="mdui-typo" id="descriptions"></div>
+                <hr />
+                <div class="mdui-typo" id="code-run-status">
+
+                </div>
+                <button class="mdui-btn mdui-ripple mdui-btn-block" onclick="submit_code();">提交当前代码（在右侧书写代码）</button>
+            </div>
+            <div class="mdui-col-xs-8" style="height: 100%;">
+                <div id="editor" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
