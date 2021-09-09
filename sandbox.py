@@ -21,6 +21,7 @@ class Sandbox:
         self.venv_builtins['print'] = self.print_
         self.venv_builtins['exit'] = self.none_func
         self.venv_builtins['open'] = self.none_func
+        self.venv_builtins['help'] = self.none_func
 
     def none_func(self, *args, **kwargs):
         # disable a function via this
