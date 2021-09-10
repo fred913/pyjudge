@@ -11,6 +11,7 @@ click = "*"
 waitress = "*"
 yapf = "*"
 lxml = "*"
+requests = "*"
 
 [dev-packages]
 rope = "*"
