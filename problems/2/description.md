@@ -7,7 +7,7 @@ You must know what "`if`" is in English. However, the same in Python has the sam
 
 ## `input()`是什么？
 `input(prompt)` 会从控制台读取一行字符串。  
-`prompt` 参数（可选）可以使你在输入之前先输出一行文字，称为「提示符」。
+`prompt` 参数（可选） 可以使你在输入之前先输出一行文字，称为「提示符」。
 
 #### 示例  
 <pre id="description-code-editor" style="height: 50px;">

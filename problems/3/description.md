@@ -40,6 +40,27 @@ window.dce2 = ace.edit("description-code-editor2", {
 })
 </script>
 
+#### 如果你学过c/c++，也可以看看：
+ - 上述代码等同于：  
+<pre id="description-code-editor3" style="height: 130px;">
+#include &lt;_mingw.h&gt;
+using namespace std;
+int main(int argc, const char* argv) {
+    for (int i = 0; i &lt; 10; i ++) {
+        &lt;statements&gt;  // 此处的代码将会被执行10次
+    }
+}
+</pre>
+<script>
+window.dce3 = ace.edit("description-code-editor3", {
+    mode: "ace/mode/c_cpp",
+    selectionStyle: "text",
+    readOnly: true,
+    fontSize: "15px",
+    theme: "ace/theme/chrome"
+})
+</script>
+
 ###### 是不是非常的简单呢？
 
 ## 任务目标
