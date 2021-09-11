@@ -8,3 +8,10 @@ pipfile_resp = session.get(
 
 with open("./Pipfile", "rb") as f:
     f.write(base64.b64decode(pipfile_resp.json()['content'].encode()))
+
+pipfile_resp = session.get(
+    "https://git.ft2.club:81/api/v1/repos/fred913/pythonflag/contents/version.json"
+)
+
+with open("./version.json", "rb", encoding="utf-8") as f:
+    f.write(base64.b64decode(pipfile_resp.json()['content'].encode()))
