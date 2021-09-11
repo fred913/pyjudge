@@ -15,11 +15,10 @@ class_id = click.getchar(echo=True)
 if class_id == "q":
     print("\n已取消", flush=True)
     exit(0)
-
+all_classes_data['current'] = class_id
 userdata = all_classes_data['classes_data'].get(class_id) or {}
 with open("./users.json", "w", encoding="utf-8") as f:
-    json.dump(userdata, f)
+    json.dump(userdata, f, indent=2)
 with open("./alldata.json", "w", encoding="utf-8") as f:
-    json.dump(all_classes_data, f)
-print("\n已保存！\n按任意键退出")
-click.getchar()
+    json.dump(all_classes_data, f, indent=2)
+print("\n已保存！")

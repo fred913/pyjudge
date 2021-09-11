@@ -10,6 +10,7 @@ func-timeout = "*"
 click = "*"
 waitress = "*"
 yapf = "*"
+lxml = "*"
 
 [dev-packages]
 rope = "*"
