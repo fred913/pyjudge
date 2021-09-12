@@ -47,7 +47,7 @@ window.dce2 = ace.edit("description-code-editor2", {
 using namespace std;
 int main(int argc, const char* argv) {
     for (int i = 0; i &lt; 10; i ++) {
-        &lt;statements&gt;  // 此处的代码将会被执行10次
+        &lt;statements&gt;;  // 此处的代码将会被执行10次
     }
 }
 </pre>
