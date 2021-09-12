@@ -1,3 +1,4 @@
+# coding: utf-8
 # just poll Pipfile and download the new problems.
 import requests
 import base64

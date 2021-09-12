@@ -1,3 +1,4 @@
+# coding: utf-8
 import builtins
 import json
 import io
