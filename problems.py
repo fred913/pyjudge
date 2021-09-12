@@ -1,6 +1,7 @@
 # coding: utf-8
 import os
 import json
+import functools
 
 
 class ProblemManager:
@@ -16,6 +17,16 @@ class ProblemManager:
                 "solved": sdata[0],
                 "unsolved": sdata[1]
             })
+
+        def mcmp(a, b):
+            if int(a['id']) > int(b['id']):
+                return 1
+            if int(a['id']) == int(b['id']):
+                return 0
+            if int(a['id']) < int(b['id']):
+                return -1
+
+        result.sort(key=functools.cmp_to_key(mcmp))
         return result
 
     def get_problem_meta(self, problem_id):
