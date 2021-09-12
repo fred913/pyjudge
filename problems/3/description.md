@@ -44,6 +44,7 @@ window.dce2 = ace.edit("description-code-editor2", {
  - 上述代码等同于：  
 <pre id="description-code-editor3" style="height: 130px;">
 #include &lt;_mingw.h&gt;
+// 只包含基本语法的头文件
 using namespace std;
 int main(int argc, const char* argv) {
     for (int i = 0; i &lt; 10; i ++) {
