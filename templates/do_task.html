@@ -74,13 +74,20 @@
                     code: code
                 }, (data) => {
                     if (data[0]) {
-                        // code validated
-                        editor.setValue(data[1])
-                        editor.selection.clearSelection()
-                        $("#code-run-status").html("<p>格式化成功</p>")
-                        var div = $("#taskview")[0]
-                        div.scrollTop = div.scrollHeight
-                        delete div
+                        if (code == editor.getValue()) {
+                            // code validated
+                            editor.setValue(data[1])
+                            editor.selection.clearSelection()
+                            $("#code-run-status").html("<p>格式化成功</p>")
+                            var div = $("#taskview")[0]
+                            div.scrollTop = div.scrollHeight
+                            delete div
+                        } else {
+                            $("#code-run-status").html("<p>格式化失败：代码已更改</p>")
+                            var div = $("#taskview")[0]
+                            div.scrollTop = div.scrollHeight
+                            delete div
+                        }
                     } else {
                         $("#code-run-status").html("<p>" + data[1].replace(/\&/g, "&amp;").replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + "</p>")
                         var div = $("#taskview")[0]
@@ -117,7 +124,8 @@
         <div class="mdui-row" id="main2">
             <div class="mdui-col-xs-4" style="overflow-x: hidden; overflow-y: auto; height: 100%;" , id="taskview">
                 <button class="mdui-btn mdui-ripple mdui-btn-block" onclick="location.href='/';">返回任务列表</button>
-                <div class="mdui-typo-display-1" style="width: 100%; text-align: center; ">任务#{{ task_id }} {{ metadata['title'] }}</div>
+                <div class="mdui-typo-display-1" style="width: 100%; text-align: center; ">任务#{{ task_id }} {{
+                    metadata['title'] }}</div>
                 <div id="subtit" class="mdui-typo-caption" style="width: 100%; text-align: center;"></div>
                 <div class="mdui-typo" id="descriptions"></div>
                 <hr />

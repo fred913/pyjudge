@@ -12,7 +12,7 @@ class ProblemManager:
         for i in l:
             sdata = self.get_problem_solve_data(i)
             result.append({
-                "id": i,
+                "id": int(i),
                 "title": self.get_problem_meta(i)['title'],
                 "solved": sdata[0],
                 "unsolved": sdata[1]
