@@ -18,6 +18,10 @@ rope = "*"
 ipython = "*"
 pipreqs = "*"
 tqdm = "*"
+yapf = "*"
 
 [requires]
 python_version = "3"
+
+[scripts]
+start = "python qstart.py"

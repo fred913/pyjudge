@@ -12,4 +12,5 @@ for ip in socket.gethostbyname_ex(socket.gethostname())[2]:
 try:
     waitress.serve(webapp.app, host="0.0.0.0", port=80, threads=9)
 except PermissionError:
-    print("检测到权限错误，请检查是否为root运行。")
+    print("检测到权限错误，运行在8080端口。")
+    waitress.serve(webapp.app, host="0.0.0.0", port=8080, threads=9)
