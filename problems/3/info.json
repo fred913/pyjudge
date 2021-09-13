@@ -1,14 +1,10 @@
 {
-  "title": "初识Python - For循环",
+  "title": "初识Python - 温度转换",
   "iscases": true,
   "cases": [
     [
-      "10057939",
-      "1"
-    ],
-    [
-      "10000011",
-      "0"
+      "1+1",
+      "2"
     ]
   ],
   "timeout": 8
