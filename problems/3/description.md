@@ -44,10 +44,11 @@ window.dce2 = ace.edit("description-code-editor2", {
  - 上述代码等同于：  
 <pre id="description-code-editor3" style="height: 130px;">
 #include &lt;_mingw.h&gt;
+// 只包含基本语法的头文件
 using namespace std;
 int main(int argc, const char* argv) {
     for (int i = 0; i &lt; 10; i ++) {
-        &lt;statements&gt;  // 此处的代码将会被执行10次
+        &lt;statements&gt;;  // 此处的代码将会被执行10次
     }
 }
 </pre>
@@ -69,3 +70,5 @@ window.dce3 = ace.edit("description-code-editor3", {
  - 任务有一定难度。  
  - 请不要使用多线程模块。（使用了会报错）  
  - 首先输入一个数，然后判断这个数是否为质数。如果这个数为质数则输出1，否则输出0  
+ - 注：本任务需要你先简单学习第三课  
+ 

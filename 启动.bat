@@ -1,3 +1,3 @@
 @ECHO OFF
 
-python -m pipenv run qstart.py
+python -m pipenv run start
