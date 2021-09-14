@@ -1,6 +1,6 @@
 {
-  "title": "初入Python - Hello, world！",
+  "title": "测试题目 - 初识运算符",
   "stdin": "",
-  "stdout": "Hello, world!",
-  "timeout": 4
+  "stdout": "2+3= 5",
+  "timeout": 8
 }

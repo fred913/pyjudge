@@ -31,7 +31,7 @@ class Sandbox:
     def input_(self, s=None):
         if s:
             self.print_(s)
-        return self.input_buffer.readline().strip(" ")
+        return self.input_buffer.readline().strip(" ").strip("\n")
 
     def import_module(self, name, *_):
         # just import it

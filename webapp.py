@@ -4,6 +4,7 @@ import problems
 import sandbox
 import json
 import time
+import os
 from flask import Flask
 from flask import request
 from flask import redirect
@@ -120,6 +121,7 @@ def submit_code(problem_id):
                 if sb.print_buffer.strip().lower() == o.strip().lower():
                     continue
                 else:
+                    print(sb.print_buffer)
                     result = "<p>代码运行不通过（答案错误），请检查代码是否正确！</p>"
                     return result
             else:
@@ -129,7 +131,10 @@ def submit_code(problem_id):
         put_userdata(ud)
         if not os.path.isdir("programs"):
             os.mkdir("programs")
-        with open("./programs/%s_%s.py" % (request.remote_addr, time.strptime(a, "%Y-%m-%d %H:%M:%S")), "w", encoding="utf-8") as f:
+        with open("./programs/%s_%s.py" %
+                  (request.remote_addr, time.strftime("%Y-%m-%d-%H-%M-%S")),
+                  "w",
+                  encoding="utf-8") as f:
             f.write(code)
         return "<p>代码运行通过！</p>"
     else:
@@ -153,7 +158,11 @@ def submit_code(problem_id):
                 put_userdata(ud)
                 if not os.path.isdir("programs"):
                     os.mkdir("programs")
-                with open("./programs/%s_%s.py" % (request.remote_addr, time.strptime(a, "%Y-%m-%d %H:%M:%S")), "w", encoding="utf-8") as f:
+                with open(
+                        "./programs/%s_%s.py" %
+                    (request.remote_addr, time.strftime("%Y-%m-%d-%H-%M-%S")),
+                        "w",
+                        encoding="utf-8") as f:
                     f.write(code)
             else:
                 result += "<p>代码运行不通过（答案错误），请检查代码是否正确！</p>"

@@ -49,4 +49,4 @@ while True:
     ))
     print("未完成：%s" % (" ".join(unfinished), ))
 
-    time.sleep(0.3)
+    time.sleep(1.2)

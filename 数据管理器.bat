@@ -1,4 +1,4 @@
 @ECHO OFF
 python -m pipenv run data-mgr.py
-echo »Ø³µ¼üÍË³ö...
+echo Press any key to quit..
 pause
