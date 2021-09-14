@@ -3,6 +3,7 @@ import markdown
 import problems
 import sandbox
 import json
+import time
 from flask import Flask
 from flask import request
 from flask import redirect
@@ -126,6 +127,10 @@ def submit_code(problem_id):
         ud = get_userdata()
         ud[request.remote_addr] = int(problem_id)
         put_userdata(ud)
+        if not os.path.isdir("programs"):
+            os.mkdir("programs")
+        with open("./programs/%s_%s.py" % (request.remote_addr, time.strptime(a, "%Y-%m-%d %H:%M:%S")), "w", encoding="utf-8") as f:
+            f.write(code)
         return "<p>代码运行通过！</p>"
     else:
         sb = sandbox.Sandbox(timeout=meta['timeout'])
@@ -146,6 +151,10 @@ def submit_code(problem_id):
                 ud = get_userdata()
                 ud[request.remote_addr] = int(problem_id)
                 put_userdata(ud)
+                if not os.path.isdir("programs"):
+                    os.mkdir("programs")
+                with open("./programs/%s_%s.py" % (request.remote_addr, time.strptime(a, "%Y-%m-%d %H:%M:%S")), "w", encoding="utf-8") as f:
+                    f.write(code)
             else:
                 result += "<p>代码运行不通过（答案错误），请检查代码是否正确！</p>"
         return result
