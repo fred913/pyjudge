@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+markdown = "*"
+flask = "*"
+func-timeout = "*"
+click = "*"
+waitress = "*"
+yapf = "*"
+lxml = "*"
+requests = "*"
+
+[dev-packages]
+rope = "*"
+ipython = "*"
+pipreqs = "*"
+tqdm = "*"
+yapf = "*"
+
+[requires]
+python_version = "3"
+
+[scripts]
+start = "python webapp.py"
