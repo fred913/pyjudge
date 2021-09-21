@@ -12,8 +12,11 @@ from flask import jsonify
 import functools
 import logging
 import yapf
+import cached
 
-logging.getLogger("werkzeug").setLevel(logging.WARNING)
+cache = cached.CacheMgr(3)
+
+logging.getLogger("werkzeug").setLevel(logging.INFO)
 
 from flask import render_template
 
@@ -22,10 +25,12 @@ app = Flask("webapp")
 
 app.add_template_global(pm.get_problem_list, "get_problem_list")
 
+
 @app.after_request
 def no_cache_settings(response):
     response.headers['Cache-Control'] = "no-cache"
     return response
+
 
 @app.template_global("get_users")
 def get_users(limit=None):
@@ -42,7 +47,7 @@ def get_users(limit=None):
         result = result[:limit]
     return result
 
-
+@cache.cache(1)
 def get_userdata():
     with open("./users.json", "r", encoding="utf-8") as f:
         return json.load(f)
