@@ -49,7 +49,7 @@ def get_users(limit=None):
         result = result[:limit]
     return result
 
-@cache.cache(0.5)
+# @cache.cache(0.5)
 def get_userdata():
     with open("./users.json", "r", encoding="utf-8") as f:
         return json.load(f)
@@ -123,8 +123,8 @@ def get_content(problem_id):
     return markdown.markdown(pm.get_problem_description(str(problem_id)))
 
 
+# @cache.cache(0.5)
 @app.route("/api/subtitle/<int:problem_id>")
-@cache.cache(0.5)
 def get_subtitle(problem_id):
     problem_id = str(problem_id)
     return '%d人已完成 - 代码限时%d秒 - %s' % (
