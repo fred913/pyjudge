@@ -7,15 +7,15 @@ class CacheMgr:
         self.cache_data = {}
 
     def cache(self, timeout=2):
-        def ww(self, f):
+        def ww(f):
             @wraps(f)
             def wrapper(*args, **kwargs):
-                if (f.__name__, args, kwargs) in self.cache_data.keys():
-                    if self.cache_data[(f.__name__, args, kwargs
-                                        )][0] - time.time() < self.timeout:
-                        return self.cache_data[(f.__name__, args, kwargs)][1]
+                if (f.__name__, args, tuple(kwargs.keys()), tuple(kwargs.values())) in self.cache_data.keys():
+                    if self.cache_data[(f.__name__, args, tuple(kwargs.keys()), tuple(kwargs.values())
+                                        )][0] - time.time() < timeout:
+                        return self.cache_data[(f.__name__, args, tuple(kwargs.keys()), tuple(kwargs.values()))][1]
                 result = f(*args, **kwargs)
-                self.cache_data[(f.__name__, args, kwargs)] = (time.time(),
+                self.cache_data[(f.__name__, args, tuple(kwargs.keys()), tuple(kwargs.values()))] = (time.time(),
                                                                result)
                 return result
 

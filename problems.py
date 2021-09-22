@@ -2,9 +2,10 @@
 import os
 import json
 import functools
-
-
+from cached import CacheMgr
+cache = CacheMgr()
 class ProblemManager:
+    @cache.cache(3)
     def get_problem_list(self):
         # just list the problems dir and get the names of the problems
         l = os.listdir("./problems/")
@@ -29,6 +30,7 @@ class ProblemManager:
         result.sort(key=functools.cmp_to_key(mcmp))
         return result
 
+    @cache.cache(3)
     def get_problem_meta(self, problem_id):
         problem_id = str(problem_id)
         with open("./problems/%s/info.json" % (problem_id, ),
@@ -36,6 +38,7 @@ class ProblemManager:
                   encoding="utf-8") as f:
             return json.load(f)
 
+    @cache.cache(1)
     def get_problem_solve_data(self, problem_id):
         with open("./users.json", "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -50,6 +53,7 @@ class ProblemManager:
             result[2][ip] = solved >= problem_id
         return result
 
+    @cache.cache(5)
     def get_problem_description(self, problem_id):
         with open("./problems/%s/description.md" % (str(problem_id), ),
                   "r",

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/mdui.min.js"></script>
+    <script src="/static/ace/src-min/ace.js"></script>
+    <script src="/static/ace/src-min/ext-language_tools.js"></script>
+    <link rel="stylesheet" href="/static/css/mdui.min.css">
+    <script>
+        $(() => {
+
+        })
+    </script>
+</head>
+
+<body>
+    <div class="mdui-container">
+        <h3>请输入你的学号和姓名</h3>
+        <form action="/login" method="POST">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">此处输入你的学号。如：3、27、40</label>
+                <input class="mdui-textfield-input" name="student_id"  type="text" pattern="^[1-9][0-9]?$" />
+                <div class="mdui-textfield-error">请输入正确的学号！</div>
+            </div>
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">此处输入你的姓名</label>
+                <input class="mdui-textfield-input" name="student_name" type="text" pattern="^[\u4e00-\u9fa5]{2,5}$" />
+                <div class="mdui-textfield-error">请输入正确的姓名！</div>
+            </div>
+            <button class="mdui-btn mdui-ripple mdui-color-green-200 mdui-btn-block" type="submit">提交</button>
+        </form>
+        
+    </div>
+</body>
+
+</html>
