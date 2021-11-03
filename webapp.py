@@ -10,6 +10,7 @@ from flask import request
 from flask import redirect
 from flask import jsonify
 from flask import session
+from flask import render_template
 import functools
 import logging
 import yapf
@@ -19,7 +20,6 @@ cache = cached.CacheMgr()
 
 logging.getLogger("werkzeug").setLevel(logging.INFO)
 
-from flask import render_template
 
 pm = problems.ProblemManager()
 app = Flask("webapp")
