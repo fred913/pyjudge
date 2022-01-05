@@ -207,6 +207,15 @@ def format_code():
              "代码%s错误，请检查代码是否正确: %s" % (e.__class__.__name__, str(e))])
     return jsonify([True, result])
 
+@app.route("/teacheradmin")
+def teacheradmin():
+    if request.remote_addr != "127.0.0.1":
+        return redirect("/")
+    return render_template("tadmin.html")
+
+@app.route("/teacheradmin_api")
+def teacheradmin_api():
+    pass
 
 if __name__ == "__main__":
     app.run("0.0.0.0", 80, threaded=False)
