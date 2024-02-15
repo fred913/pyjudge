@@ -30,7 +30,7 @@ app.add_template_global(pm.get_problem_list, "get_problem_list")
 
 
 @app.after_request
-def no_cache_settings(response):
+def no_cache_settings(response: Response):
     response.headers['Cache-Control'] = "no-cache"
     return response
 
@@ -117,19 +117,19 @@ def do_problem(problem_id):
 
 @app.route("/problem.do/<int:problem_id>")
 @requires_login
-def do_problem_code(problem_id):
+def do_problem_code(problem_id: int):
     if not get_userdata()[session['user_data']] >= (int(problem_id) - 1):
         return redirect("/problem/%s" % (str(problem_id), ))
-    problem_id = str(problem_id)
-    metadata = pm.get_problem_meta(problem_id)
+    problem_id_str = str(problem_id)
+    metadata = pm.get_problem_meta(problem_id_str)
     return render_template("do_task.html",
-                           task_id=problem_id,
+                           task_id=problem_id_str,
                            metadata=metadata)
 
 
 @app.route("/api/content/<int:problem_id>")
 @requires_login
-def get_content(problem_id):
+def get_content(problem_id: int):
     return markdown.markdown(pm.get_problem_description(str(problem_id)))
 
 
