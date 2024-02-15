@@ -6,18 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>书写代码 - 任务#{{ task_id }}</title>
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/mdui.min.js"></script>
+
+    <link rel="stylesheet" href="/node_modules/mdui/mdui.css">
+    <link rel="stylesheet" href="/static/highlight/styles/default.min.css">
+    <link rel="stylesheet" href="/static/global.css">
+
+    <script src="/node_modules/mdui/mdui.global.js"></script>
+    <script src="/static/highlight/highlight.min.js"></script>
+    <script src="/static/global.js"></script>
+
+    <link rel="stylesheet" href="/static/do-task.css">
+
     <script src="/static/ace/src-min/ace.js"></script>
     <script src="/static/ace/src-min/ext-language_tools.js" defer></script>
     <script src="/static/ace/src-min/ext-elastic_tabstops_lite.js" defer></script>
     <script src="/static/ace/src-min/ext-beautify.js" defer></script>
     <script src="/static/ace/src-min/ext-code_lens.js" defer></script>
-    <link rel="stylesheet" href="/static/css/mdui.min.css">
     <script>
         $(() => {
             $.get("/api/content/{{ task_id }}", (d) => {
                 $("#descriptions").html(d)
+
+                $.highlightFromMarkdown()
             })
             window.update_subtit = () => {
                 $.get("/api/subtitle/{{ task_id }}", (d) => {
@@ -65,8 +75,11 @@
             editor.session.setMode("ace/mode/python")
             editor.setOptions({
                 enableBasicAutocompletion: true,
+                enableLiveAutocompletion: true,
                 useElasticTabstops: true,
-                useWorker: true
+                useWorker: true,
+                enableMultiselect: true,
+                hScrollBarAlwaysVisible: true,
             })
             window.format_code = () => {
                 var code = editor.getValue()
@@ -111,32 +124,33 @@
             })
             document.getElementById('editor').style.fontSize = "14px"
             var resz = () => {
-                $("#main2").css("height", $(window).innerHeight() + "px")
+                $("#main").css("height", $(window).innerHeight() + "px")
             }
-            $(window).resize(resz)
+            $(window).on("resize", resz)
             resz()
         })
     </script>
 </head>
 
 <body>
-    <div class="mdui-container-fluid">
-        <div class="mdui-row" id="main2">
-            <div class="mdui-col-xs-4" style="overflow-x: hidden; overflow-y: auto; height: 100%;" , id="taskview">
-                <button class="mdui-btn mdui-ripple mdui-btn-block" onclick="location.href='/';">返回任务列表</button>
-                <div class="mdui-typo-display-1" style="width: 100%; text-align: center; ">任务#{{ task_id }} {{
-                    metadata['title'] }}</div>
-                <div id="subtitle" class="mdui-typo-caption" style="width: 100%; text-align: center;"></div>
-                <div class="mdui-typo" id="descriptions"></div>
-                <hr />
-                <div class="mdui-typo" id="code-run-status">
+    <div class="mdui-row" id="main">
+        <div id="taskview">
+            <mdui-button onclick="location.href='/';">返回任务列表<mdui-icon slot="icon"
+                    name="arrow_back_ios_new"></mdui-icon></mdui-button>
+            <div class="mdui-prose">
+                <h3 class="util-text-center" style="margin-bottom: 0;">任务#{{ task_id }} {{ metadata['title'] }}</h3>
+                <h5 id="subtitle" class="util-text-center" style="margin-top: 0;"></h5>
+            </div>
 
-                </div>
-                <button class="mdui-btn mdui-ripple mdui-btn-block" onclick="submit_code();">提交当前代码（在右侧书写代码）</button>
+            <div class="mdui-prose" id="descriptions"></div>
+            <hr />
+            <div class="mdui-typo" id="code-run-status">
+
             </div>
-            <div class="mdui-col-xs-8" style="height: 100%;">
-                <div id="editor" style="width: 100%; height: 100%;"></div>
-            </div>
+            <mdui-button full-width onclick="submit_code();">提交当前代码（在右侧书写代码）</mdui-button>
+        </div>
+        <div id="codeview">
+            <div id="editor" style="width: 100%; height: 100%;"></div>
         </div>
     </div>
 </body>

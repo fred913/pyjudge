@@ -9,6 +9,7 @@ Python3.3 中增加`flush`关键字参数。
 以下是 print() 方法的语法:
 
 `print(*objects, sep=' ', end='\n', file=sys.stdout, flush=False)`
+
 ### 参数
  - objects -- 复数，表示可以一次输出多个对象。输出多个对象时，需要用 , 分隔。  
  - sep -- 用来间隔多个对象，默认值是一个空格。  
@@ -21,4 +22,3 @@ Python3.3 中增加`flush`关键字参数。
 
 ## 任务目标
  - 尝试这段代码：`print("2+3=", 2+3)`
- - 这会输出什么？不要耍小聪明哦！

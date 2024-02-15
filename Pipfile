@@ -5,13 +5,13 @@ name = "pypi"
 
 [packages]
 markdown = "*"
-flask = "*"
 func-timeout = "*"
 click = "*"
-waitress = "*"
 yapf = "*"
 lxml = "*"
 requests = "*"
+quart = "*"
+uvicorn = "*"
 
 [dev-packages]
 ipython = "*"

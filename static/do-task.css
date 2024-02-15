@@ -1,0 +1,21 @@
+#taskview {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    width: 35%;
+    display: inline-block;
+
+    padding: 22px;
+    box-sizing: border-box;
+}
+
+#codeview {
+    height: 100%;
+    width: 65%;
+    float: right;
+}
+
+body {
+    margin: 0;
+    overflow-y: hidden;
+}

@@ -1,4 +1,4 @@
-from flask import Response
+from quart import Response
 
 
 def generate_403(text: str | None = None):

@@ -63,16 +63,35 @@
 }
 
 /* anim: rovide color changing animations when triggering dark mode */
-:root,
+/* :root,
 .mdui-theme-light,
 .mdui-theme-dark,
 .mdui-theme-auto {
     transition: 0.17s ease-out;
     transition-property: color,
         background-color;
-}
+} */
 
 /* util: text-center */
 .util-text-center {
     text-align: center;
+}
+
+/* util: block-to-right */
+.util-block-to-right {
+    margin-left: auto;
+    margin-right: 0;
+    display: block;
+}
+
+/* desc.md: code-block */
+.descmd-code-block {
+    background-color: rgba(127, 127, 127, 0.2);
+
+    display: block;
+    padding: 8px 16px;
+    border-radius: 8px;
+
+    overflow-y: hidden;
+    overflow-x: scroll;
 }

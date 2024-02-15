@@ -1,16 +1,17 @@
 # coding: utf-8
+from typing import Callable, Coroutine
 import markdown
 import problems
 import sandbox
 import json
 import time
 import os
-from flask import Flask, Response, send_file
-from flask import request
-from flask import redirect
-from flask import jsonify
-from flask import session
-from flask import render_template
+from quart import Quart, Response, send_file
+from quart import request
+from quart import redirect
+from quart import jsonify
+from quart import session
+from quart import render_template
 import functools
 import logging
 import yapf
@@ -22,7 +23,7 @@ cache = cached.CacheMgr()
 logging.getLogger("werkzeug").setLevel(logging.INFO)
 
 pm = problems.ProblemManager()
-app = Flask("webapp")
+app = Quart("webapp")
 app.config['SECRET_KEY'] = "testsecret123"
 app.config['TEMPLATES_AUTO_RELOAD'] = False
 
@@ -55,10 +56,10 @@ def put_userdata(d):
         return json.dump(d, f, indent=4)
 
 
-def requires_login(f):
+def requires_login(f: Callable[..., Coroutine]):
 
     @functools.wraps(f)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         if not session.get("user_data"):
             return redirect("/login")
         try:
@@ -68,7 +69,7 @@ def requires_login(f):
         if session['user_data'] not in data:
             data[session['user_data']] = 0
             put_userdata(data)
-        res = f(*args, **kwargs)
+        res = await f(*args, **kwargs)
         return res
 
     return wrapper
@@ -76,23 +77,25 @@ def requires_login(f):
 
 @app.route("/")
 @requires_login
-def index():
+async def index():
     # tasks list
-    return render_template("tasks.html",
-                           user_current=get_userdata()[session['user_data']],
-                           int=int)
+    return await render_template(
+        "tasks.html",
+        user_current=get_userdata()[session['user_data']],
+        int=int)
 
 
 @app.route("/login", methods=['GET', "POST"])
-def login():
+async def login():
     if request.method.lower() == "get":
         # render template
-        return render_template("login.html")
+        return await render_template("login.html")
     else:
         # 组合学号姓名
         # student_name and student_id in request.form
-        student_id = request.form.get("student_id", type=int)
-        student_name = request.form.get("student_name")
+        form = await request.form
+        student_id = form.get("student_id", type=int)
+        student_name = form.get("student_name")
         if student_id is None or student_name is None:
             return generate_403()
         student_name = student_name.strip()
@@ -104,10 +107,10 @@ def login():
 
 @app.route("/problem/<int:problem_id>")
 @requires_login
-def do_problem(problem_id):
+async def do_problem(problem_id):
     problem_id = str(problem_id)
     metadata = pm.get_problem_meta(problem_id)
-    return render_template(
+    return await render_template(
         "task.html",
         task_id=problem_id,
         metadata=metadata,
@@ -117,26 +120,27 @@ def do_problem(problem_id):
 
 @app.route("/problem.do/<int:problem_id>")
 @requires_login
-def do_problem_code(problem_id: int):
+async def do_problem_code(problem_id: int):
     if not get_userdata()[session['user_data']] >= (int(problem_id) - 1):
         return redirect("/problem/%s" % (str(problem_id), ))
     problem_id_str = str(problem_id)
     metadata = pm.get_problem_meta(problem_id_str)
-    return render_template("do_task.html",
-                           task_id=problem_id_str,
-                           metadata=metadata)
+    return await render_template("do_task.html",
+                                 task_id=problem_id_str,
+                                 metadata=metadata)
 
 
 @app.route("/api/content/<int:problem_id>")
 @requires_login
-def get_content(problem_id: int):
-    return markdown.markdown(pm.get_problem_description(str(problem_id)))
+async def get_content(problem_id: int):
+    md = markdown.Markdown()
+    return md.convert(pm.get_problem_description(str(problem_id)))
 
 
 # @cache.cache(0.5)
 @app.route("/api/subtitle/<int:problem_id>")
 @requires_login
-def get_subtitle(problem_id):
+async def get_subtitle(problem_id):
     problem_id = str(problem_id)
     return '%d人已完成 - 代码限时%d秒 - %s' % (
         pm.get_problem_solve_data(problem_id)[0],
@@ -146,8 +150,9 @@ def get_subtitle(problem_id):
 
 @app.route("/api/submit.code/<int:problem_id>", methods=['POST'])
 @requires_login
-def submit_code(problem_id: int):
-    code = request.form.get("code", None)
+async def submit_code(problem_id: int):
+    form = await request.form
+    code = form.get("code", None)
     if code is None:
         return generate_403()
     meta = pm.get_problem_meta(problem_id)
@@ -211,8 +216,9 @@ def submit_code(problem_id: int):
 
 @app.route("/api/format", methods=['POST'])
 @requires_login
-def format_code():
-    code = request.form.get("code")
+async def format_code():
+    form = await request.form
+    code = form.get("code")
     try:
         result = yapf.yapf_api.FormatCode(code, filename="<code>")[0]
         assert result
@@ -229,14 +235,14 @@ def format_code():
 
 @app.route("/teacheradmin")
 @requires_login
-def teacheradmin():
+async def teacheradmin():
     if request.remote_addr != "127.0.0.1":
         return redirect("/")
-    return render_template("tadmin.html")
+    return await render_template("tadmin.html")
 
 
 @app.route("/node_modules/<path:p>")
-def serve_node_static(p):
+async def serve_node_static(p):
     realpath = os.path.abspath(os.path.join("node_modules", p))
     blocked_suffixes = {"package-lock.json", "package.json"}
     if not realpath.startswith(os.path.abspath(
@@ -245,7 +251,7 @@ def serve_node_static(p):
         # hacking
         return generate_404()
     if os.path.isfile(realpath):
-        return send_file(realpath)
+        return await send_file(realpath)
     return generate_404()
 
 

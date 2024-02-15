@@ -1,9 +1,5 @@
-# 初识Python - 输入
-You must know what "`if`" is in English. However, the same in Python has the same meaning.  
-
 ## 前情回顾
 你还记得「思维导图」中的「输入、输出」吗？这回，我们将使用「输入」的函数「`input`」。  
-
 
 ## `input()`是什么？
 `input(prompt)` 会从控制台读取一行字符串。  
