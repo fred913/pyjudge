@@ -14,7 +14,6 @@ lxml = "*"
 requests = "*"
 
 [dev-packages]
-rope = "*"
 ipython = "*"
 pipreqs = "*"
 tqdm = "*"
@@ -24,4 +23,6 @@ yapf = "*"
 python_version = "3"
 
 [scripts]
-start = "python webapp.py"
+launch = "python qstart.py"
+launch-dev = "python webapp.py"
+data-manager = "python data-mgr.py"

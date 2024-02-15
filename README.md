@@ -1,6 +1,6 @@
-# pythonflag
+# PyJudge
 
-Python 代码闯关系统
+Python 编码闯关、评分系统
 
-# Introduction
-This is a python code challenge system for students which contains ace-based editor with syntax highlighting, code completion, and more.
+
+<!-- TODO: readme documentation -->

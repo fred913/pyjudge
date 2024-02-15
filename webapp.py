@@ -5,7 +5,7 @@ import sandbox
 import json
 import time
 import os
-from flask import Flask
+from flask import Flask, Response, send_file
 from flask import request
 from flask import redirect
 from flask import jsonify
@@ -15,15 +15,16 @@ import functools
 import logging
 import yapf
 import cached
+from webutils import generate_403, generate_404
 
 cache = cached.CacheMgr()
 
 logging.getLogger("werkzeug").setLevel(logging.INFO)
 
-
 pm = problems.ProblemManager()
 app = Flask("webapp")
-app.config['SECRET_KEY'] = "xlayyyds"
+app.config['SECRET_KEY'] = "testsecret123"
+app.config['TEMPLATES_AUTO_RELOAD'] = False
 
 app.add_template_global(pm.get_problem_list, "get_problem_list")
 
@@ -36,18 +37,12 @@ def no_cache_settings(response):
 
 @app.template_global("get_users")
 def get_users(limit=None):
-    def dict_cmp(a, b):
-        if a[1] > b[1]:
-            return 1
-        elif a[1] == b[1]:
-            return 0
-        else:
-            return -1
 
-    result = sorted(get_userdata().items(), key=functools.cmp_to_key(dict_cmp))
+    result = sorted(get_userdata().items(), key=lambda x: x[1])
     if limit:
         result = result[:limit]
     return result
+
 
 # @cache.cache(0.5)
 def get_userdata():
@@ -60,9 +55,10 @@ def put_userdata(d):
         return json.dump(d, f, indent=4)
 
 
-@app.before_request
-def init_user():
-    if request.path != "/login" and not request.path.startswith("/static"):
+def requires_login(f):
+
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
         if not session.get("user_data"):
             return redirect("/login")
         try:
@@ -72,14 +68,20 @@ def init_user():
         if session['user_data'] not in data:
             data[session['user_data']] = 0
             put_userdata(data)
+        res = f(*args, **kwargs)
+        return res
+
+    return wrapper
 
 
 @app.route("/")
+@requires_login
 def index():
     # tasks list
     return render_template("tasks.html",
                            user_current=get_userdata()[session['user_data']],
                            int=int)
+
 
 @app.route("/login", methods=['GET', "POST"])
 def login():
@@ -89,13 +91,19 @@ def login():
     else:
         # 组合学号姓名
         # student_name and student_id in request.form
-        student_name = request.form.get("student_name").strip()
-        student_id =  int(request.form.get("student_id"))
+        student_id = request.form.get("student_id", type=int)
+        student_name = request.form.get("student_name")
+        if student_id is None or student_name is None:
+            return generate_403()
+        student_name = student_name.strip()
+        student_id = int(student_id)
         if student_id and student_name:
             session['user_data'] = "%d %s" % (student_id, student_name)
         return redirect("/", 301)
-        
+
+
 @app.route("/problem/<int:problem_id>")
+@requires_login
 def do_problem(problem_id):
     problem_id = str(problem_id)
     metadata = pm.get_problem_meta(problem_id)
@@ -108,6 +116,7 @@ def do_problem(problem_id):
 
 
 @app.route("/problem.do/<int:problem_id>")
+@requires_login
 def do_problem_code(problem_id):
     if not get_userdata()[session['user_data']] >= (int(problem_id) - 1):
         return redirect("/problem/%s" % (str(problem_id), ))
@@ -119,12 +128,14 @@ def do_problem_code(problem_id):
 
 
 @app.route("/api/content/<int:problem_id>")
+@requires_login
 def get_content(problem_id):
     return markdown.markdown(pm.get_problem_description(str(problem_id)))
 
 
 # @cache.cache(0.5)
 @app.route("/api/subtitle/<int:problem_id>")
+@requires_login
 def get_subtitle(problem_id):
     problem_id = str(problem_id)
     return '%d人已完成 - 代码限时%d秒 - %s' % (
@@ -134,8 +145,11 @@ def get_subtitle(problem_id):
 
 
 @app.route("/api/submit.code/<int:problem_id>", methods=['POST'])
-def submit_code(problem_id):
-    code = request.form.get("code")
+@requires_login
+def submit_code(problem_id: int):
+    code = request.form.get("code", None)
+    if code is None:
+        return generate_403()
     meta = pm.get_problem_meta(problem_id)
     if meta.get("iscases"):
         # advanced
@@ -196,26 +210,44 @@ def submit_code(problem_id):
 
 
 @app.route("/api/format", methods=['POST'])
+@requires_login
 def format_code():
     code = request.form.get("code")
     try:
         result = yapf.yapf_api.FormatCode(code, filename="<code>")[0]
-    except Exception as e:
+        assert result
+    except (
+            IndentationError,
+            NameError,
+    ) as e:
         # get the error
         return jsonify(
             [False,
              "代码%s错误，请检查代码是否正确: %s" % (e.__class__.__name__, str(e))])
     return jsonify([True, result])
 
+
 @app.route("/teacheradmin")
+@requires_login
 def teacheradmin():
     if request.remote_addr != "127.0.0.1":
         return redirect("/")
     return render_template("tadmin.html")
 
-@app.route("/teacheradmin_api")
-def teacheradmin_api():
-    pass
+
+@app.route("/node_modules/<path:p>")
+def serve_node_static(p):
+    realpath = os.path.abspath(os.path.join("node_modules", p))
+    blocked_suffixes = {"package-lock.json", "package.json"}
+    if not realpath.startswith(os.path.abspath(
+            os.path.dirname(__file__))) or any(
+                [realpath.endswith(i) for i in blocked_suffixes]):
+        # hacking
+        return generate_404()
+    if os.path.isfile(realpath):
+        return send_file(realpath)
+    return generate_404()
+
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", 80, threaded=False)
+    app.run("0.0.0.0", 80)

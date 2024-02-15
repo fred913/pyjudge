@@ -1,0 +1,78 @@
+/* Material Icons */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/static/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* layout: container for page content with page centering and automated width adjustment */
+.mdui-container,
+.container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (max-width: 767px) {
+
+    .mdui-container,
+    .container {
+        width: auto;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .mdui-container,
+    .container {
+        width: 680px;
+    }
+}
+
+@media (min-width: 992px) {
+
+    .mdui-container,
+    .container {
+        width: 800px;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    .mdui-container,
+    .container {
+        width: 970px;
+    }
+}
+
+/* anim: rovide color changing animations when triggering dark mode */
+:root,
+.mdui-theme-light,
+.mdui-theme-dark,
+.mdui-theme-auto {
+    transition: 0.17s ease-out;
+    transition-property: color,
+        background-color;
+}
+
+/* util: text-center */
+.util-text-center {
+    text-align: center;
+}

@@ -6,40 +6,45 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>任务#{{ task_id }}</title>
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/mdui.min.js"></script>
-    <script src="/static/ace/src-min/ace.js"></script>
-    <script src="/static/ace/src-min/ext-language_tools.js"></script>
-    <link rel="stylesheet" href="/static/css/mdui.min.css">
+    <link rel="stylesheet" href="/node_modules/mdui/mdui.css">
+    <link rel="stylesheet" href="/static/global.css">
+    <script src="/node_modules/mdui/mdui.global.js"></script>
+    <script src="/static/global.js"></script>
     <script>
         $(() => {
-            $.get("/api/content/{{ task_id }}", (d) => {
-                $("#descriptions").html(d)
-            })
-            setInterval(() => {
-                $.get("/api/subtitle/{{ task_id }}", (d) => {
-                    $("#subtit").text(d)
+            function updateData() {
+                $.get("/api/content/{{ task_id }}", (d) => {
+                    $("#descriptions").html(d)
                 })
+                $.get("/api/subtitle/{{ task_id }}", (d) => {
+                    $("#subtitle").text(d)
+                })
+            }
+            setInterval(() => {
+                updateData()
             }, 2000)
-            $.get("/api/subtitle/{{ task_id }}", (d) => {
-                $("#subtit").text(d)
-            })
+            updateData()
         })
     </script>
 </head>
 
 <body>
-    <div class="mdui-container">
-        <button class="mdui-btn mdui-ripple mdui-btn-block" onclick="location.href='/';">返回任务列表</button>
-        <div class="mdui-typo-display-1" style="width: 100%; text-align: center;">任务#{{ task_id }} {{ metadata['title'] }}<br /></div>
-        <div id="subtit" class="mdui-typo-caption" style="width: 100%; text-align: center;"></div>
+    <div class="container">
+        <mdui-button onclick="location.href='/';">返回任务列表<mdui-icon slot="icon"
+                name="arrow_back_ios_new"></mdui-icon></mdui-button>
+        <div class="mdui-prose">
+            <h1 class="util-text-center" style="margin-bottom: 0;">任务#{{ task_id }} {{ metadata['title'] }}</h1>
+            <h5 id="subtitle" class="util-text-center" style="margin-top: 0;"></h5>
+        </div>
 
-        <div class="mdui-typo" id="descriptions"></div>
+        <div class="mdui-prose" id="descriptions"></div>
         {% if allowed %}
-        <button class="mdui-btn mdui-ripple mdui-btn-block" onclick="location.href='/problem.do/{{ task_id }}';">去写代码！</button>
+        <button class="mdui-btn mdui-ripple mdui-btn-block"
+            onclick="location.href='/problem.do/{{ task_id }}';">去写代码！</button>
         {% else %}
-        <div class="mdui-typo">
-            <p style="text-align: center;">你还不能完成这个任务！请先完成<a href="/problem/{{ allowed_param1 }}">任务#{{ allowed_param1 }}</a></p>
+        <div class="mdui-prose">
+            <p style="text-align: center;">你还不能完成这个任务！请先完成<a href="/problem/{{ allowed_param1 }}">任务#{{ allowed_param1
+                    }}</a></p>
         </div>
 
         {% endif %}

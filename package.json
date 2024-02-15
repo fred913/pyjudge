@@ -1,0 +1,15 @@
+{
+  "name": "pyjudge",
+  "version": "1.0.0",
+  "description": "Python 编码闯关、评分系统",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fred913",
+  "license": "ISC",
+  "dependencies": {
+    "@mdui/icons": "^1.0.2",
+    "mdui": "^2.0.3"
+  }
+}

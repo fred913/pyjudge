@@ -1,10 +1,13 @@
 # coding: utf-8
 import os
 import json
-import functools
 from cached import CacheMgr
+
 cache = CacheMgr()
+
+
 class ProblemManager:
+
     def get_problem_list(self):
         # just list the problems dir and get the names of the problems
         l = os.listdir("./problems/")
@@ -18,15 +21,7 @@ class ProblemManager:
                 "unsolved": sdata[1]
             })
 
-        def mcmp(a, b):
-            if int(a['id']) > int(b['id']):
-                return 1
-            if int(a['id']) == int(b['id']):
-                return 0
-            if int(a['id']) < int(b['id']):
-                return -1
-
-        result.sort(key=functools.cmp_to_key(mcmp))
+        result.sort(key=lambda x: x['id'])  # type: ignore
         return result
 
     def get_problem_meta(self, problem_id):
@@ -50,10 +45,7 @@ class ProblemManager:
             result[2][ip] = solved >= problem_id
         return result
 
-<<<<<<< HEAD
-    @cache.cache(5)
-=======
->>>>>>> 258f907 (test)
+    @cache.cached_deco(5)
     def get_problem_description(self, problem_id):
         with open("./problems/%s/description.md" % (str(problem_id), ),
                   "r",

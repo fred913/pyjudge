@@ -21,7 +21,7 @@
             })
             window.update_subtit = () => {
                 $.get("/api/subtitle/{{ task_id }}", (d) => {
-                    $("#subtit").text(d)
+                    $("#subtitle").text(d)
                 })
             }
             update_subtit()
@@ -126,7 +126,7 @@
                 <button class="mdui-btn mdui-ripple mdui-btn-block" onclick="location.href='/';">返回任务列表</button>
                 <div class="mdui-typo-display-1" style="width: 100%; text-align: center; ">任务#{{ task_id }} {{
                     metadata['title'] }}</div>
-                <div id="subtit" class="mdui-typo-caption" style="width: 100%; text-align: center;"></div>
+                <div id="subtitle" class="mdui-typo-caption" style="width: 100%; text-align: center;"></div>
                 <div class="mdui-typo" id="descriptions"></div>
                 <hr />
                 <div class="mdui-typo" id="code-run-status">
