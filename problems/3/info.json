@@ -1,6 +1,10 @@
 {
   "title": "初入Python - Hello, world！",
-  "stdin": "",
-  "stdout": "Hello, world!",
-  "timeout": 4
+  "timeout": 4,
+  "cases": [
+    [
+      "",
+      "Hello, world!"
+    ]
+  ]
 }

@@ -51,7 +51,7 @@
                         $("#code-run-status").html(`<h6>正在运行代码...</h6>`)
 
                         // It returns a string
-                        $("#code-run-status").html(d)
+                        $("#code-run-status").text(d)
                         var div = $("#taskview")[0]
                         div.scrollTop = div.scrollHeight
                         delete div
@@ -61,8 +61,8 @@
                         update_subtit()
                     })
                 })
-
             }
+
             window.editor = ace.edit("editor")
             editor.setTheme("ace/theme/chrome")
             editor.session.setMode("ace/mode/python")

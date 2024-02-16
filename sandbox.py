@@ -6,22 +6,33 @@ import io
 import math
 import sys
 import traceback
-from typing import Type, TypedDict
+from typing import Any, Type, TypedDict
 from func_timeout import func_timeout
 from func_timeout import FunctionTimedOut
 
 
-class sandbox_module(dict):
+class sandbox_module:
 
-    def __getattribute__(self, k: str):
-        return self[k]
+    def __init__(self, children: dict[str, Any], representation: str):
+        self._ch = children
+        self._repr = representation
+
+    def __repr__(self) -> builtins.str:
+        return self._repr
+
+    def __getattr__(self, k: str):
+        try:
+            return self._ch[k]
+        except KeyError as e:
+            raise NameError(k)
 
 
 def generate_fake_sys(stdin: io.StringIO,
                       stdout: io.StringIO,
                       stderr: io.StringIO | None = None):
 
-    return sandbox_module(stdin=stdin, stdout=stdout, stderr=stderr)
+    return sandbox_module(dict(stdin=stdin, stdout=stdout, stderr=stderr),
+                          "<module 'sys' (built-in)>")
 
 
 class Sandbox:
@@ -82,6 +93,7 @@ class Sandbox:
         except FunctionTimedOut:
             return "程序代码运行超时，请检查是否有死循环等逻辑错误或未做优化"
         except Exception as e:
+            # traceback.print_exc()
             frames = traceback.extract_tb(sys.exc_info()[2])
             for _ in range(3):  # 3 frames are internal so hide them
                 frames.pop(0)

@@ -1,7 +1,11 @@
 title = "测试题目 - 初识运算符"
-stdin = ""
-stdout = "2+3= 5"
 timeout = 8
+cases = [
+    [
+        "",
+        "2+3= 5",
+    ],
+]
 descriptions = """
 ## 描述
 `print()` 方法用于打印输出，最常见的一个函数。

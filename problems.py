@@ -3,7 +3,7 @@
 import os
 import json
 from threading import Lock
-from typing import Hashable
+from typing import Hashable, TypedDict
 from cached import CacheMgr
 
 cache = CacheMgr()
@@ -26,6 +26,13 @@ class LockPool:
 lpool = LockPool()
 
 
+class ProblemMetaDict(TypedDict):
+    title: str
+    cases: list[list[str]]
+    timeout: int
+    descriptions: str
+
+
 class ProblemManager:
 
     def get_problem_list(self):
@@ -44,7 +51,7 @@ class ProblemManager:
         result.sort(key=lambda x: x['id'])  # type: ignore
         return result
 
-    def get_problem_meta(self, problem_id: str | int):
+    def get_problem_meta(self, problem_id: str | int) -> ProblemMetaDict:
         problem_id = int(problem_id)
         with lpool.getlock((problem_id, 0)):
             with open("./problems/%s/info.json" % (problem_id, ),

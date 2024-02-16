@@ -1,7 +1,11 @@
 title = "初入Python - Hello, world！"
-stdin = ""
-stdout = "Hello, world!"
 timeout = 4
+cases = [
+    [
+        "",
+        "Hello, world!",
+    ],
+]
 descriptions = """
 # 欢迎来到Python的世界！
 Python是一门优雅而健壮的编程语言，它继承了传统编译语言的强大性和通用性，同时也借鉴了简单脚本和解释语言的易用性。它可以帮你完成工作，而且一段时间以后，你还能看明白自己写的这段代码。  

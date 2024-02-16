@@ -1,6 +1,5 @@
 {
   "title": "Python基本算法 - 三角形的面积",
-  "iscases": true,
   "cases": [
     [
       "3,4,5",

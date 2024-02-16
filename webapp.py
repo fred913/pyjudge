@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import warnings
 import util_toml2jsonmd
 
 from typing import Callable, Coroutine
@@ -58,7 +59,7 @@ def get_userdata():
 
 def put_userdata(d):
     with open("./users.json", "w", encoding="utf-8") as f:
-        return json.dump(d, f, indent=4)
+        return json.dump(d, f, indent=4, ensure_ascii=False)
 
 
 def requires_login(f: Callable[..., Coroutine]):
@@ -163,63 +164,32 @@ async def submit_code(problem_id: int):
     if code is None:
         return generate_403()
     meta = pm.get_problem_meta(problem_id)
-    if meta.get("iscases"):
-        # advanced
-        for i, o in meta.get("cases"):
-            sb = sandbox.Sandbox(timeout=meta['timeout'])
-            sb.input_buffer.write(i + "\n")
-            result = sb.run(code)
-            if result == 0:
-                if sb.print_buffer.getvalue().strip().lower() == o.strip(
-                ).lower():
-                    continue
-                else:
-                    print(repr(sb.print_buffer.getvalue()))
-                    result = "<p>代码运行不通过（答案错误），请检查代码是否正确！</p>"
-                    return result
-            else:
-                return result
-        ud = get_userdata()
-        ud[session['user_data']] = int(problem_id)
-        put_userdata(ud)
-        if not os.path.isdir("programs"):
-            os.mkdir("programs")
-        with open("./programs/%s_%s.py" %
-                  (session['user_data'], time.strftime("%Y-%m-%d-%H-%M-%S")),
-                  "w",
-                  encoding="utf-8") as f:
-            f.write(code)
-        return "<p>代码运行通过！</p>"
-    else:
+    print(code)
+    # advanced
+    for i, o in meta.get("cases"):
         sb = sandbox.Sandbox(timeout=meta['timeout'])
-        sb.input_buffer.write(meta['stdin'] + "\n")
+        sb.input_buffer.write(i + "\n")
         result = sb.run(code)
         if result == 0:
-            # let's check the stdout
-            # don't let the students know the stdin content
-            if meta['stdin']:
-                result = ""
+            if sb.print_buffer.getvalue().strip().lower() == o.strip().lower():
+                continue
             else:
-                result = "<p>程序输出内容：</p><pre>%s</pre>" % (
-                    sb.print_buffer.getvalue().replace("&", "&amp;").replace(
-                        "<", "&lt;").replace(">", "&gt;"), )
-            if sb.print_buffer.getvalue().strip().lower(
-            ) == meta['stdout'].strip().lower():
-                result += "<p>代码运行通过！</p>"
-                ud = get_userdata()
-                ud[session['user_data']] = int(problem_id)
-                put_userdata(ud)
-                if not os.path.isdir("programs"):
-                    os.mkdir("programs")
-                with open("./programs/%d_%s_%s.py" %
-                          (problem_id, session['user_data'],
-                           time.strftime("%Y-%m-%d-%H-%M-%S")),
-                          "w",
-                          encoding="utf-8") as f:
-                    f.write(code)
-            else:
-                result += "<p>代码运行不通过（答案错误），请检查代码是否正确！</p>"
-        return result
+                print(repr(sb.print_buffer.getvalue()))
+                result = "代码运行不通过（答案错误），请检查代码是否正确！"
+                return result
+        else:
+            return result
+    ud = get_userdata()
+    ud[session['user_data']] = int(problem_id)
+    put_userdata(ud)
+    if not os.path.isdir("programs"):
+        os.mkdir("programs")
+    with open("./programs/%s_%s.py" %
+              (session['user_data'], time.strftime("%Y-%m-%d-%H-%M-%S")),
+              "w",
+              encoding="utf-8") as f:
+        f.write(code)
+    return "代码运行通过！"
 
 
 @app.route("/api/format", methods=['POST'])
