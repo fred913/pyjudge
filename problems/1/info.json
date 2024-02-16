@@ -1,6 +1,6 @@
 {
-  "title": "测试题目 - 初识运算符",
-  "stdin": "",
-  "stdout": "2+3= 5",
-  "timeout": 8
+    "title": "测试题目 - 初识运算符",
+    "stdin": "",
+    "stdout": "2+3= 5",
+    "timeout": 8
 }

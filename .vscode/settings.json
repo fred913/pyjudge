@@ -5,5 +5,7 @@
     ],
     "css.customData": [
         "./node_modules/mdui/css-data.zh-cn.json"
-    ]
+    ],
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true
 }

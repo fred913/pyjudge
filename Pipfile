@@ -13,6 +13,8 @@ requests = "*"
 quart = "*"
 uvicorn = "*"
 openai = "*"
+toml = "*"
+tomli-w = "*"
 
 [dev-packages]
 ipython = "*"

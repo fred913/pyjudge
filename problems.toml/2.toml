@@ -1,0 +1,23 @@
+title = "测试题目 - 自我介绍"
+iscases = true
+cases = [
+    [
+        """
+123
+123
+""",
+        "大家好！我叫 123 ，今年 123 岁。",
+    ],
+]
+timeout = 4
+descriptions = """
+## 目标
+
+编写一个如下代码的程序，运行试试...
+
+
+```python
+name = input()  # 输入姓名
+age = input()   # 输入年龄
+print(\"大家好！我叫\", name, \"，今年\", age, \"岁。\")
+```"""

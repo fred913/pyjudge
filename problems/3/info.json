@@ -1,6 +1,6 @@
 {
-  "title": "初入Python - Hello, world！",
-  "stdin": "",
-  "stdout": "Hello, world!",
-  "timeout": 4
+    "title": "初入Python - Hello, world！",
+    "stdin": "",
+    "stdout": "Hello, world!",
+    "timeout": 4
 }
