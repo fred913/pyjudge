@@ -15,7 +15,8 @@ def convert_toml_to_json_md(toml_dir, output_dir):
             metadata = tomllib.load(f)
 
         descriptions = metadata.pop("descriptions")
-
+        if not os.path.isdir(os.path.join(output_dir, problem_id)):
+            os.mkdir(os.path.join(output_dir, problem_id))
         with open(os.path.join(output_dir, problem_id, "info.json"),
                   "w",
                   encoding="utf-8") as f:

@@ -1,7 +1,9 @@
 # coding: utf-8
+import base64
 import builtins
 import json
 import io
+import math
 import sys
 import traceback
 from typing import Type, TypedDict
@@ -56,7 +58,11 @@ class Sandbox:
             json,
             "sys":
             generate_fake_sys(self.input_buffer, self.print_buffer,
-                              self.print_buffer)
+                              self.print_buffer),
+            "math":
+            math,
+            "base64":
+            base64
         }
         mod = replist.get(name, None)
         if mod is not None:

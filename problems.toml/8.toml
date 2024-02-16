@@ -1,5 +1,6 @@
 title = "Python程序基本结构 - 圆的面积"
 iscases = true
+# cases: [[input, output], ...]
 cases = [
     [
         "2",

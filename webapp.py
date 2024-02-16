@@ -1,4 +1,7 @@
 # coding: utf-8
+
+import util_toml2jsonmd
+
 from typing import Callable, Coroutine
 import markdown
 import problems
@@ -18,6 +21,7 @@ import yapf
 import cached
 from webutils import generate_403, generate_404
 from markdown.extensions.fenced_code import FencedCodeExtension
+from yapf.yapflib.errors import YapfError
 
 cache = cached.CacheMgr()
 
@@ -207,11 +211,11 @@ async def submit_code(problem_id: int):
                 put_userdata(ud)
                 if not os.path.isdir("programs"):
                     os.mkdir("programs")
-                with open(
-                        "./programs/%s_%s.py" %
-                    (session['user_data'], time.strftime("%Y-%m-%d-%H-%M-%S")),
-                        "w",
-                        encoding="utf-8") as f:
+                with open("./programs/%d_%s_%s.py" %
+                          (problem_id, session['user_data'],
+                           time.strftime("%Y-%m-%d-%H-%M-%S")),
+                          "w",
+                          encoding="utf-8") as f:
                     f.write(code)
             else:
                 result += "<p>代码运行不通过（答案错误），请检查代码是否正确！</p>"
@@ -226,10 +230,7 @@ async def format_code():
     try:
         result = yapf.yapf_api.FormatCode(code, filename="<code>")[0]
         assert result
-    except (
-            IndentationError,
-            NameError,
-    ) as e:
+    except (IndentationError, NameError, YapfError) as e:
         # get the error
         return jsonify(
             [False,

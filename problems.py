@@ -2,9 +2,28 @@
 # legacy JSON&MD structure
 import os
 import json
+from threading import Lock
+from typing import Hashable
 from cached import CacheMgr
 
 cache = CacheMgr()
+
+
+class LockPool:
+
+    def __init__(self) -> None:
+        self.locks = {}
+
+    def getlock(self, id_: Hashable):
+        try:
+            return self.locks[id_]
+
+        except KeyError:
+            self.locks[id_] = Lock()
+            return self.locks[id_]
+
+
+lpool = LockPool()
 
 
 class ProblemManager:
@@ -25,12 +44,13 @@ class ProblemManager:
         result.sort(key=lambda x: x['id'])  # type: ignore
         return result
 
-    def get_problem_meta(self, problem_id):
-        problem_id = str(problem_id)
-        with open("./problems/%s/info.json" % (problem_id, ),
-                  "r",
-                  encoding="utf-8") as f:
-            return json.load(f)
+    def get_problem_meta(self, problem_id: str | int):
+        problem_id = int(problem_id)
+        with lpool.getlock((problem_id, 0)):
+            with open("./problems/%s/info.json" % (problem_id, ),
+                      "r",
+                      encoding="utf-8") as f:
+                return json.load(f)
 
     def get_problem_solve_data(self, problem_id):
         with open("./users.json", "r", encoding="utf-8") as f:
@@ -48,7 +68,8 @@ class ProblemManager:
 
     @cache.cached_deco(5)
     def get_problem_description(self, problem_id):
-        with open("./problems/%s/description.md" % (str(problem_id), ),
-                  "r",
-                  encoding="utf-8") as f:
-            return f.read()
+        with lpool.getlock((problem_id, 1)):
+            with open("./problems/%s/description.md" % (str(problem_id), ),
+                      "r",
+                      encoding="utf-8") as f:
+                return f.read()
