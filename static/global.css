@@ -93,5 +93,24 @@
     border-radius: 8px;
 
     overflow-y: hidden;
-    overflow-x: scroll;
+    overflow-x: auto;
+}
+
+/* task-subtitle: done, notdone */
+.subtitle-is-done-mark {
+    color: red;
+
+    &[done] {
+        color: rgb(29, 204, 29);
+    }
+}
+
+@media(prefers-color-scheme: dark) {
+    .subtitle-is-done-mark {
+        color: rgb(255, 106, 106);
+
+        &[done] {
+            color: lightgreen;
+        }
+    }
 }

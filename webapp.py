@@ -17,6 +17,7 @@ import logging
 import yapf
 import cached
 from webutils import generate_403, generate_404
+from markdown.extensions.fenced_code import FencedCodeExtension
 
 cache = cached.CacheMgr()
 
@@ -133,7 +134,7 @@ async def do_problem_code(problem_id: int):
 @app.route("/api/content/<int:problem_id>")
 @requires_login
 async def get_content(problem_id: int):
-    md = markdown.Markdown()
+    md = markdown.Markdown(extensions=[FencedCodeExtension()])
     return md.convert(pm.get_problem_description(str(problem_id)))
 
 
@@ -144,8 +145,10 @@ async def get_subtitle(problem_id):
     problem_id = str(problem_id)
     return '%d人已完成 - 代码限时%d秒 - %s' % (
         pm.get_problem_solve_data(problem_id)[0],
-        pm.get_problem_meta(problem_id)['timeout'], "已完成"
-        if get_userdata()[session['user_data']] >= int(problem_id) else "未完成")
+        pm.get_problem_meta(problem_id)['timeout'],
+        "<span class=\"subtitle-is-done-mark\" done>已完成</span>"
+        if get_userdata()[session['user_data']] >= int(problem_id) else
+        "<span class=\"subtitle-is-done-mark\">未完成</span>")
 
 
 @app.route("/api/submit.code/<int:problem_id>", methods=['POST'])
@@ -163,10 +166,11 @@ async def submit_code(problem_id: int):
             sb.input_buffer.write(i + "\n")
             result = sb.run(code)
             if result == 0:
-                if sb.print_buffer.strip().lower() == o.strip().lower():
+                if sb.print_buffer.getvalue().strip().lower() == o.strip(
+                ).lower():
                     continue
                 else:
-                    print(sb.print_buffer)
+                    print(repr(sb.print_buffer.getvalue()))
                     result = "<p>代码运行不通过（答案错误），请检查代码是否正确！</p>"
                     return result
             else:
@@ -193,10 +197,10 @@ async def submit_code(problem_id: int):
                 result = ""
             else:
                 result = "<p>程序输出内容：</p><pre>%s</pre>" % (
-                    sb.print_buffer.replace("&", "&amp;").replace(
+                    sb.print_buffer.getvalue().replace("&", "&amp;").replace(
                         "<", "&lt;").replace(">", "&gt;"), )
-            if sb.print_buffer.strip().lower() == meta['stdout'].strip().lower(
-            ):
+            if sb.print_buffer.getvalue().strip().lower(
+            ) == meta['stdout'].strip().lower():
                 result += "<p>代码运行通过！</p>"
                 ud = get_userdata()
                 ud[session['user_data']] = int(problem_id)
@@ -253,6 +257,11 @@ async def serve_node_static(p):
     if os.path.isfile(realpath):
         return await send_file(realpath)
     return generate_404()
+
+
+@app.route("/dStatic/highlightjs-theme.css")
+async def get_highlightjs_theme():
+    return await send_file("static/highlight/styles/googlecode.min.css")
 
 
 if __name__ == "__main__":

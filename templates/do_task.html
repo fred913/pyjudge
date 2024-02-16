@@ -8,7 +8,7 @@
     <title>书写代码 - 任务#{{ task_id }}</title>
 
     <link rel="stylesheet" href="/node_modules/mdui/mdui.css">
-    <link rel="stylesheet" href="/static/highlight/styles/default.min.css">
+    <link rel="stylesheet" href="/dStatic/highlightjs-theme.css">
     <link rel="stylesheet" href="/static/global.css">
 
     <script src="/node_modules/mdui/mdui.global.js"></script>
@@ -31,7 +31,7 @@
             })
             window.update_subtit = () => {
                 $.get("/api/subtitle/{{ task_id }}", (d) => {
-                    $("#subtitle").text(d)
+                    $("#subtitle").html(d)
                 })
             }
             update_subtit()
@@ -96,7 +96,7 @@
                             div.scrollTop = div.scrollHeight
                             delete div
                         } else {
-                            $("#code-run-status").html("<p>格式化失败：代码已更改</p>")
+                            $("#code-run-status").html("<p>格式化失败：代码更改过快</p>")
                             var div = $("#taskview")[0]
                             div.scrollTop = div.scrollHeight
                             delete div

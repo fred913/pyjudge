@@ -5,25 +5,17 @@
 `input(prompt)` 会从控制台读取一行字符串。  
 `prompt` 参数（可选） 可以使你在输入之前先输出一行文字，称为「提示符」。
 
-#### 示例  
-<pre id="description-code-editor" style="height: 50px;">
+#### 示例
+```python
 s = input("请输入：")
-print("你输入了：", s)</pre>
-我们输入123，则终端里显示：    
-<pre>
+print("你输入了：", s)
+```
+
+我们输入123，则终端里显示：   
+```plaintext
 请输入：123
 你输入了： 123
-</pre>
-<script>
-window.dce1 = ace.edit("description-code-editor", {
-    mode: "ace/mode/python",
-    selectionStyle: "text",
-    readOnly: true,
-    fontSize: "15px",
-    theme: "ace/theme/chrome"
-})
-
-</script>
+```
 
 ## 任务目标
  - 超级简单！   

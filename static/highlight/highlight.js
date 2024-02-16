@@ -3619,6 +3619,139 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('arduino', hljsGrammar);
+  })();/*! `armasm` grammar compiled for Highlight.js 11.9.0 */
+  (function(){
+    var hljsGrammar = (function () {
+  'use strict';
+
+  /*
+  Language: ARM Assembly
+  Author: Dan Panzarella <alsoelp@gmail.com>
+  Description: ARM Assembly including Thumb and Thumb2 instructions
+  Category: assembler
+  */
+
+  /** @type LanguageFn */
+  function armasm(hljs) {
+    // local labels: %?[FB]?[AT]?\d{1,2}\w+
+
+    const COMMENT = { variants: [
+      hljs.COMMENT('^[ \\t]*(?=#)', '$', {
+        relevance: 0,
+        excludeBegin: true
+      }),
+      hljs.COMMENT('[;@]', '$', { relevance: 0 }),
+      hljs.C_LINE_COMMENT_MODE,
+      hljs.C_BLOCK_COMMENT_MODE
+    ] };
+
+    return {
+      name: 'ARM Assembly',
+      case_insensitive: true,
+      aliases: [ 'arm' ],
+      keywords: {
+        $pattern: '\\.?' + hljs.IDENT_RE,
+        meta:
+          // GNU preprocs
+          '.2byte .4byte .align .ascii .asciz .balign .byte .code .data .else .end .endif .endm .endr .equ .err .exitm .extern .global .hword .if .ifdef .ifndef .include .irp .long .macro .rept .req .section .set .skip .space .text .word .arm .thumb .code16 .code32 .force_thumb .thumb_func .ltorg '
+          // ARM directives
+          + 'ALIAS ALIGN ARM AREA ASSERT ATTR CN CODE CODE16 CODE32 COMMON CP DATA DCB DCD DCDU DCDO DCFD DCFDU DCI DCQ DCQU DCW DCWU DN ELIF ELSE END ENDFUNC ENDIF ENDP ENTRY EQU EXPORT EXPORTAS EXTERN FIELD FILL FUNCTION GBLA GBLL GBLS GET GLOBAL IF IMPORT INCBIN INCLUDE INFO KEEP LCLA LCLL LCLS LTORG MACRO MAP MEND MEXIT NOFP OPT PRESERVE8 PROC QN READONLY RELOC REQUIRE REQUIRE8 RLIST FN ROUT SETA SETL SETS SN SPACE SUBT THUMB THUMBX TTL WHILE WEND ',
+        built_in:
+          'r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ' // standard registers
+          + 'w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 ' // 32 bit ARMv8 registers
+          + 'w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 '
+          + 'x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 ' // 64 bit ARMv8 registers
+          + 'x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 '
+          + 'pc lr sp ip sl sb fp ' // typical regs plus backward compatibility
+          + 'a1 a2 a3 a4 v1 v2 v3 v4 v5 v6 v7 v8 f0 f1 f2 f3 f4 f5 f6 f7 ' // more regs and fp
+          + 'p0 p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13 p14 p15 ' // coprocessor regs
+          + 'c0 c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12 c13 c14 c15 ' // more coproc
+          + 'q0 q1 q2 q3 q4 q5 q6 q7 q8 q9 q10 q11 q12 q13 q14 q15 ' // advanced SIMD NEON regs
+
+          // program status registers
+          + 'cpsr_c cpsr_x cpsr_s cpsr_f cpsr_cx cpsr_cxs cpsr_xs cpsr_xsf cpsr_sf cpsr_cxsf '
+          + 'spsr_c spsr_x spsr_s spsr_f spsr_cx spsr_cxs spsr_xs spsr_xsf spsr_sf spsr_cxsf '
+
+          // NEON and VFP registers
+          + 's0 s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 '
+          + 's16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31 '
+          + 'd0 d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11 d12 d13 d14 d15 '
+          + 'd16 d17 d18 d19 d20 d21 d22 d23 d24 d25 d26 d27 d28 d29 d30 d31 '
+
+          + '{PC} {VAR} {TRUE} {FALSE} {OPT} {CONFIG} {ENDIAN} {CODESIZE} {CPU} {FPU} {ARCHITECTURE} {PCSTOREOFFSET} {ARMASM_VERSION} {INTER} {ROPI} {RWPI} {SWST} {NOSWST} . @'
+      },
+      contains: [
+        {
+          className: 'keyword',
+          begin: '\\b(' // mnemonics
+              + 'adc|'
+              + '(qd?|sh?|u[qh]?)?add(8|16)?|usada?8|(q|sh?|u[qh]?)?(as|sa)x|'
+              + 'and|adrl?|sbc|rs[bc]|asr|b[lx]?|blx|bxj|cbn?z|tb[bh]|bic|'
+              + 'bfc|bfi|[su]bfx|bkpt|cdp2?|clz|clrex|cmp|cmn|cpsi[ed]|cps|'
+              + 'setend|dbg|dmb|dsb|eor|isb|it[te]{0,3}|lsl|lsr|ror|rrx|'
+              + 'ldm(([id][ab])|f[ds])?|ldr((s|ex)?[bhd])?|movt?|mvn|mra|mar|'
+              + 'mul|[us]mull|smul[bwt][bt]|smu[as]d|smmul|smmla|'
+              + 'mla|umlaal|smlal?([wbt][bt]|d)|mls|smlsl?[ds]|smc|svc|sev|'
+              + 'mia([bt]{2}|ph)?|mrr?c2?|mcrr2?|mrs|msr|orr|orn|pkh(tb|bt)|rbit|'
+              + 'rev(16|sh)?|sel|[su]sat(16)?|nop|pop|push|rfe([id][ab])?|'
+              + 'stm([id][ab])?|str(ex)?[bhd]?|(qd?)?sub|(sh?|q|u[qh]?)?sub(8|16)|'
+              + '[su]xt(a?h|a?b(16)?)|srs([id][ab])?|swpb?|swi|smi|tst|teq|'
+              + 'wfe|wfi|yield'
+          + ')'
+          + '(eq|ne|cs|cc|mi|pl|vs|vc|hi|ls|ge|lt|gt|le|al|hs|lo)?' // condition codes
+          + '[sptrx]?' // legal postfixes
+          + '(?=\\s)' // followed by space
+        },
+        COMMENT,
+        hljs.QUOTE_STRING_MODE,
+        {
+          className: 'string',
+          begin: '\'',
+          end: '[^\\\\]\'',
+          relevance: 0
+        },
+        {
+          className: 'title',
+          begin: '\\|',
+          end: '\\|',
+          illegal: '\\n',
+          relevance: 0
+        },
+        {
+          className: 'number',
+          variants: [
+            { // hex
+              begin: '[#$=]?0x[0-9a-f]+' },
+            { // bin
+              begin: '[#$=]?0b[01]+' },
+            { // literal
+              begin: '[#$=]\\d+' },
+            { // bare number
+              begin: '\\b\\d+' }
+          ],
+          relevance: 0
+        },
+        {
+          className: 'symbol',
+          variants: [
+            { // GNU ARM syntax
+              begin: '^[ \\t]*[a-z_\\.\\$][a-z0-9_\\.\\$]+:' },
+            { // ARM syntax
+              begin: '^[a-z_\\.\\$][a-z0-9_\\.\\$]+' },
+            { // label reference
+              begin: '[=#]\\w+' }
+          ],
+          relevance: 0
+        }
+      ]
+    };
+  }
+
+  return armasm;
+
+})();
+
+    hljs.registerLanguage('armasm', hljsGrammar);
   })();/*! `bash` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
@@ -4031,6 +4164,245 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('bash', hljsGrammar);
+  })();/*! `basic` grammar compiled for Highlight.js 11.9.0 */
+  (function(){
+    var hljsGrammar = (function () {
+  'use strict';
+
+  /*
+  Language: BASIC
+  Author: Raphaël Assénat <raph@raphnet.net>
+  Description: Based on the BASIC reference from the Tandy 1000 guide
+  Website: https://en.wikipedia.org/wiki/Tandy_1000
+  Category: system
+  */
+
+  /** @type LanguageFn */
+  function basic(hljs) {
+    const KEYWORDS = [
+      "ABS",
+      "ASC",
+      "AND",
+      "ATN",
+      "AUTO|0",
+      "BEEP",
+      "BLOAD|10",
+      "BSAVE|10",
+      "CALL",
+      "CALLS",
+      "CDBL",
+      "CHAIN",
+      "CHDIR",
+      "CHR$|10",
+      "CINT",
+      "CIRCLE",
+      "CLEAR",
+      "CLOSE",
+      "CLS",
+      "COLOR",
+      "COM",
+      "COMMON",
+      "CONT",
+      "COS",
+      "CSNG",
+      "CSRLIN",
+      "CVD",
+      "CVI",
+      "CVS",
+      "DATA",
+      "DATE$",
+      "DEFDBL",
+      "DEFINT",
+      "DEFSNG",
+      "DEFSTR",
+      "DEF|0",
+      "SEG",
+      "USR",
+      "DELETE",
+      "DIM",
+      "DRAW",
+      "EDIT",
+      "END",
+      "ENVIRON",
+      "ENVIRON$",
+      "EOF",
+      "EQV",
+      "ERASE",
+      "ERDEV",
+      "ERDEV$",
+      "ERL",
+      "ERR",
+      "ERROR",
+      "EXP",
+      "FIELD",
+      "FILES",
+      "FIX",
+      "FOR|0",
+      "FRE",
+      "GET",
+      "GOSUB|10",
+      "GOTO",
+      "HEX$",
+      "IF",
+      "THEN",
+      "ELSE|0",
+      "INKEY$",
+      "INP",
+      "INPUT",
+      "INPUT#",
+      "INPUT$",
+      "INSTR",
+      "IMP",
+      "INT",
+      "IOCTL",
+      "IOCTL$",
+      "KEY",
+      "ON",
+      "OFF",
+      "LIST",
+      "KILL",
+      "LEFT$",
+      "LEN",
+      "LET",
+      "LINE",
+      "LLIST",
+      "LOAD",
+      "LOC",
+      "LOCATE",
+      "LOF",
+      "LOG",
+      "LPRINT",
+      "USING",
+      "LSET",
+      "MERGE",
+      "MID$",
+      "MKDIR",
+      "MKD$",
+      "MKI$",
+      "MKS$",
+      "MOD",
+      "NAME",
+      "NEW",
+      "NEXT",
+      "NOISE",
+      "NOT",
+      "OCT$",
+      "ON",
+      "OR",
+      "PEN",
+      "PLAY",
+      "STRIG",
+      "OPEN",
+      "OPTION",
+      "BASE",
+      "OUT",
+      "PAINT",
+      "PALETTE",
+      "PCOPY",
+      "PEEK",
+      "PMAP",
+      "POINT",
+      "POKE",
+      "POS",
+      "PRINT",
+      "PRINT]",
+      "PSET",
+      "PRESET",
+      "PUT",
+      "RANDOMIZE",
+      "READ",
+      "REM",
+      "RENUM",
+      "RESET|0",
+      "RESTORE",
+      "RESUME",
+      "RETURN|0",
+      "RIGHT$",
+      "RMDIR",
+      "RND",
+      "RSET",
+      "RUN",
+      "SAVE",
+      "SCREEN",
+      "SGN",
+      "SHELL",
+      "SIN",
+      "SOUND",
+      "SPACE$",
+      "SPC",
+      "SQR",
+      "STEP",
+      "STICK",
+      "STOP",
+      "STR$",
+      "STRING$",
+      "SWAP",
+      "SYSTEM",
+      "TAB",
+      "TAN",
+      "TIME$",
+      "TIMER",
+      "TROFF",
+      "TRON",
+      "TO",
+      "USR",
+      "VAL",
+      "VARPTR",
+      "VARPTR$",
+      "VIEW",
+      "WAIT",
+      "WHILE",
+      "WEND",
+      "WIDTH",
+      "WINDOW",
+      "WRITE",
+      "XOR"
+    ];
+
+    return {
+      name: 'BASIC',
+      case_insensitive: true,
+      illegal: '^\.',
+      // Support explicitly typed variables that end with $%! or #.
+      keywords: {
+        $pattern: '[a-zA-Z][a-zA-Z0-9_$%!#]*',
+        keyword: KEYWORDS
+      },
+      contains: [
+        hljs.QUOTE_STRING_MODE,
+        hljs.COMMENT('REM', '$', { relevance: 10 }),
+        hljs.COMMENT('\'', '$', { relevance: 0 }),
+        {
+          // Match line numbers
+          className: 'symbol',
+          begin: '^[0-9]+ ',
+          relevance: 10
+        },
+        {
+          // Match typed numeric constants (1000, 12.34!, 1.2e5, 1.5#, 1.2D2)
+          className: 'number',
+          begin: '\\b\\d+(\\.\\d+)?([edED]\\d+)?[#\!]?',
+          relevance: 0
+        },
+        {
+          // Match hexadecimal numbers (&Hxxxx)
+          className: 'number',
+          begin: '(&[hH][0-9a-fA-F]{1,4})'
+        },
+        {
+          // Match octal numbers (&Oxxxxxx)
+          className: 'number',
+          begin: '(&[oO][0-7]{1,6})'
+        }
+      ]
+    };
+  }
+
+  return basic;
+
+})();
+
+    hljs.registerLanguage('basic', hljsGrammar);
   })();/*! `c` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
@@ -6252,240 +6624,6 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('diff', hljsGrammar);
-  })();/*! `django` grammar compiled for Highlight.js 11.9.0 */
-  (function(){
-    var hljsGrammar = (function () {
-  'use strict';
-
-  /*
-  Language: Django
-  Description: Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design.
-  Requires: xml.js
-  Author: Ivan Sagalaev <maniac@softwaremaniacs.org>
-  Contributors: Ilya Baryshev <baryshev@gmail.com>
-  Website: https://www.djangoproject.com
-  Category: template
-  */
-
-  /** @type LanguageFn */
-  function django(hljs) {
-    const FILTER = {
-      begin: /\|[A-Za-z]+:?/,
-      keywords: { name:
-          'truncatewords removetags linebreaksbr yesno get_digit timesince random striptags '
-          + 'filesizeformat escape linebreaks length_is ljust rjust cut urlize fix_ampersands '
-          + 'title floatformat capfirst pprint divisibleby add make_list unordered_list urlencode '
-          + 'timeuntil urlizetrunc wordcount stringformat linenumbers slice date dictsort '
-          + 'dictsortreversed default_if_none pluralize lower join center default '
-          + 'truncatewords_html upper length phone2numeric wordwrap time addslashes slugify first '
-          + 'escapejs force_escape iriencode last safe safeseq truncatechars localize unlocalize '
-          + 'localtime utc timezone' },
-      contains: [
-        hljs.QUOTE_STRING_MODE,
-        hljs.APOS_STRING_MODE
-      ]
-    };
-
-    return {
-      name: 'Django',
-      aliases: [ 'jinja' ],
-      case_insensitive: true,
-      subLanguage: 'xml',
-      contains: [
-        hljs.COMMENT(/\{%\s*comment\s*%\}/, /\{%\s*endcomment\s*%\}/),
-        hljs.COMMENT(/\{#/, /#\}/),
-        {
-          className: 'template-tag',
-          begin: /\{%/,
-          end: /%\}/,
-          contains: [
-            {
-              className: 'name',
-              begin: /\w+/,
-              keywords: { name:
-                  'comment endcomment load templatetag ifchanged endifchanged if endif firstof for '
-                  + 'endfor ifnotequal endifnotequal widthratio extends include spaceless '
-                  + 'endspaceless regroup ifequal endifequal ssi now with cycle url filter '
-                  + 'endfilter debug block endblock else autoescape endautoescape csrf_token empty elif '
-                  + 'endwith static trans blocktrans endblocktrans get_static_prefix get_media_prefix '
-                  + 'plural get_current_language language get_available_languages '
-                  + 'get_current_language_bidi get_language_info get_language_info_list localize '
-                  + 'endlocalize localtime endlocaltime timezone endtimezone get_current_timezone '
-                  + 'verbatim' },
-              starts: {
-                endsWithParent: true,
-                keywords: 'in by as',
-                contains: [ FILTER ],
-                relevance: 0
-              }
-            }
-          ]
-        },
-        {
-          className: 'template-variable',
-          begin: /\{\{/,
-          end: /\}\}/,
-          contains: [ FILTER ]
-        }
-      ]
-    };
-  }
-
-  return django;
-
-})();
-
-    hljs.registerLanguage('django', hljsGrammar);
-  })();/*! `go` grammar compiled for Highlight.js 11.9.0 */
-  (function(){
-    var hljsGrammar = (function () {
-  'use strict';
-
-  /*
-  Language: Go
-  Author: Stephan Kountso aka StepLg <steplg@gmail.com>
-  Contributors: Evgeny Stepanischev <imbolk@gmail.com>
-  Description: Google go language (golang). For info about language
-  Website: http://golang.org/
-  Category: common, system
-  */
-
-  function go(hljs) {
-    const LITERALS = [
-      "true",
-      "false",
-      "iota",
-      "nil"
-    ];
-    const BUILT_INS = [
-      "append",
-      "cap",
-      "close",
-      "complex",
-      "copy",
-      "imag",
-      "len",
-      "make",
-      "new",
-      "panic",
-      "print",
-      "println",
-      "real",
-      "recover",
-      "delete"
-    ];
-    const TYPES = [
-      "bool",
-      "byte",
-      "complex64",
-      "complex128",
-      "error",
-      "float32",
-      "float64",
-      "int8",
-      "int16",
-      "int32",
-      "int64",
-      "string",
-      "uint8",
-      "uint16",
-      "uint32",
-      "uint64",
-      "int",
-      "uint",
-      "uintptr",
-      "rune"
-    ];
-    const KWS = [
-      "break",
-      "case",
-      "chan",
-      "const",
-      "continue",
-      "default",
-      "defer",
-      "else",
-      "fallthrough",
-      "for",
-      "func",
-      "go",
-      "goto",
-      "if",
-      "import",
-      "interface",
-      "map",
-      "package",
-      "range",
-      "return",
-      "select",
-      "struct",
-      "switch",
-      "type",
-      "var",
-    ];
-    const KEYWORDS = {
-      keyword: KWS,
-      type: TYPES,
-      literal: LITERALS,
-      built_in: BUILT_INS
-    };
-    return {
-      name: 'Go',
-      aliases: [ 'golang' ],
-      keywords: KEYWORDS,
-      illegal: '</',
-      contains: [
-        hljs.C_LINE_COMMENT_MODE,
-        hljs.C_BLOCK_COMMENT_MODE,
-        {
-          className: 'string',
-          variants: [
-            hljs.QUOTE_STRING_MODE,
-            hljs.APOS_STRING_MODE,
-            {
-              begin: '`',
-              end: '`'
-            }
-          ]
-        },
-        {
-          className: 'number',
-          variants: [
-            {
-              begin: hljs.C_NUMBER_RE + '[i]',
-              relevance: 1
-            },
-            hljs.C_NUMBER_MODE
-          ]
-        },
-        { begin: /:=/ // relevance booster
-        },
-        {
-          className: 'function',
-          beginKeywords: 'func',
-          end: '\\s*(\\{|$)',
-          excludeEnd: true,
-          contains: [
-            hljs.TITLE_MODE,
-            {
-              className: 'params',
-              begin: /\(/,
-              end: /\)/,
-              endsParent: true,
-              keywords: KEYWORDS,
-              illegal: /["']/
-            }
-          ]
-        }
-      ]
-    };
-  }
-
-  return go;
-
-})();
-
-    hljs.registerLanguage('go', hljsGrammar);
   })();/*! `http` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
@@ -6592,6 +6730,136 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('http', hljsGrammar);
+  })();/*! `ini` grammar compiled for Highlight.js 11.9.0 */
+  (function(){
+    var hljsGrammar = (function () {
+  'use strict';
+
+  /*
+  Language: TOML, also INI
+  Description: TOML aims to be a minimal configuration file format that's easy to read due to obvious semantics.
+  Contributors: Guillaume Gomez <guillaume1.gomez@gmail.com>
+  Category: common, config
+  Website: https://github.com/toml-lang/toml
+  */
+
+  function ini(hljs) {
+    const regex = hljs.regex;
+    const NUMBERS = {
+      className: 'number',
+      relevance: 0,
+      variants: [
+        { begin: /([+-]+)?[\d]+_[\d_]+/ },
+        { begin: hljs.NUMBER_RE }
+      ]
+    };
+    const COMMENTS = hljs.COMMENT();
+    COMMENTS.variants = [
+      {
+        begin: /;/,
+        end: /$/
+      },
+      {
+        begin: /#/,
+        end: /$/
+      }
+    ];
+    const VARIABLES = {
+      className: 'variable',
+      variants: [
+        { begin: /\$[\w\d"][\w\d_]*/ },
+        { begin: /\$\{(.*?)\}/ }
+      ]
+    };
+    const LITERALS = {
+      className: 'literal',
+      begin: /\bon|off|true|false|yes|no\b/
+    };
+    const STRINGS = {
+      className: "string",
+      contains: [ hljs.BACKSLASH_ESCAPE ],
+      variants: [
+        {
+          begin: "'''",
+          end: "'''",
+          relevance: 10
+        },
+        {
+          begin: '"""',
+          end: '"""',
+          relevance: 10
+        },
+        {
+          begin: '"',
+          end: '"'
+        },
+        {
+          begin: "'",
+          end: "'"
+        }
+      ]
+    };
+    const ARRAY = {
+      begin: /\[/,
+      end: /\]/,
+      contains: [
+        COMMENTS,
+        LITERALS,
+        VARIABLES,
+        STRINGS,
+        NUMBERS,
+        'self'
+      ],
+      relevance: 0
+    };
+
+    const BARE_KEY = /[A-Za-z0-9_-]+/;
+    const QUOTED_KEY_DOUBLE_QUOTE = /"(\\"|[^"])*"/;
+    const QUOTED_KEY_SINGLE_QUOTE = /'[^']*'/;
+    const ANY_KEY = regex.either(
+      BARE_KEY, QUOTED_KEY_DOUBLE_QUOTE, QUOTED_KEY_SINGLE_QUOTE
+    );
+    const DOTTED_KEY = regex.concat(
+      ANY_KEY, '(\\s*\\.\\s*', ANY_KEY, ')*',
+      regex.lookahead(/\s*=\s*[^#\s]/)
+    );
+
+    return {
+      name: 'TOML, also INI',
+      aliases: [ 'toml' ],
+      case_insensitive: true,
+      illegal: /\S/,
+      contains: [
+        COMMENTS,
+        {
+          className: 'section',
+          begin: /\[+/,
+          end: /\]+/
+        },
+        {
+          begin: DOTTED_KEY,
+          className: 'attr',
+          starts: {
+            end: /$/,
+            contains: [
+              COMMENTS,
+              ARRAY,
+              LITERALS,
+              VARIABLES,
+              STRINGS,
+              NUMBERS
+            ]
+          }
+        }
+      ]
+    };
+  }
+
+  return ini;
+
+})();
+
+    hljs.registerLanguage('ini', hljsGrammar);
   })();/*! `java` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
@@ -8914,494 +9182,147 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('markdown', hljsGrammar);
-  })();/*! `nginx` grammar compiled for Highlight.js 11.9.0 */
+  })();/*! `mipsasm` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
 
   /*
-  Language: Nginx config
-  Author: Peter Leonov <gojpeg@yandex.ru>
-  Contributors: Ivan Sagalaev <maniac@softwaremaniacs.org>
-  Category: config, web
-  Website: https://www.nginx.com
+  Language: MIPS Assembly
+  Author: Nebuleon Fumika <nebuleon.fumika@gmail.com>
+  Description: MIPS Assembly (up to MIPS32R2)
+  Website: https://en.wikipedia.org/wiki/MIPS_architecture
+  Category: assembler
   */
 
-  /** @type LanguageFn */
-  function nginx(hljs) {
-    const regex = hljs.regex;
-    const VAR = {
-      className: 'variable',
-      variants: [
-        { begin: /\$\d+/ },
-        { begin: /\$\{\w+\}/ },
-        { begin: regex.concat(/[$@]/, hljs.UNDERSCORE_IDENT_RE) }
-      ]
-    };
-    const LITERALS = [
-      "on",
-      "off",
-      "yes",
-      "no",
-      "true",
-      "false",
-      "none",
-      "blocked",
-      "debug",
-      "info",
-      "notice",
-      "warn",
-      "error",
-      "crit",
-      "select",
-      "break",
-      "last",
-      "permanent",
-      "redirect",
-      "kqueue",
-      "rtsig",
-      "epoll",
-      "poll",
-      "/dev/poll"
-    ];
-    const DEFAULT = {
-      endsWithParent: true,
+  function mipsasm(hljs) {
+    // local labels: %?[FB]?[AT]?\d{1,2}\w+
+    return {
+      name: 'MIPS Assembly',
+      case_insensitive: true,
+      aliases: [ 'mips' ],
       keywords: {
-        $pattern: /[a-z_]{2,}|\/dev\/poll/,
-        literal: LITERALS
+        $pattern: '\\.?' + hljs.IDENT_RE,
+        meta:
+          // GNU preprocs
+          '.2byte .4byte .align .ascii .asciz .balign .byte .code .data .else .end .endif .endm .endr .equ .err .exitm .extern .global .hword .if .ifdef .ifndef .include .irp .long .macro .rept .req .section .set .skip .space .text .word .ltorg ',
+        built_in:
+          '$0 $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13 $14 $15 ' // integer registers
+          + '$16 $17 $18 $19 $20 $21 $22 $23 $24 $25 $26 $27 $28 $29 $30 $31 ' // integer registers
+          + 'zero at v0 v1 a0 a1 a2 a3 a4 a5 a6 a7 ' // integer register aliases
+          + 't0 t1 t2 t3 t4 t5 t6 t7 t8 t9 s0 s1 s2 s3 s4 s5 s6 s7 s8 ' // integer register aliases
+          + 'k0 k1 gp sp fp ra ' // integer register aliases
+          + '$f0 $f1 $f2 $f2 $f4 $f5 $f6 $f7 $f8 $f9 $f10 $f11 $f12 $f13 $f14 $f15 ' // floating-point registers
+          + '$f16 $f17 $f18 $f19 $f20 $f21 $f22 $f23 $f24 $f25 $f26 $f27 $f28 $f29 $f30 $f31 ' // floating-point registers
+          + 'Context Random EntryLo0 EntryLo1 Context PageMask Wired EntryHi ' // Coprocessor 0 registers
+          + 'HWREna BadVAddr Count Compare SR IntCtl SRSCtl SRSMap Cause EPC PRId ' // Coprocessor 0 registers
+          + 'EBase Config Config1 Config2 Config3 LLAddr Debug DEPC DESAVE CacheErr ' // Coprocessor 0 registers
+          + 'ECC ErrorEPC TagLo DataLo TagHi DataHi WatchLo WatchHi PerfCtl PerfCnt ' // Coprocessor 0 registers
       },
-      relevance: 0,
-      illegal: '=>',
       contains: [
-        hljs.HASH_COMMENT_MODE,
+        {
+          className: 'keyword',
+          begin: '\\b(' // mnemonics
+              // 32-bit integer instructions
+              + 'addi?u?|andi?|b(al)?|beql?|bgez(al)?l?|bgtzl?|blezl?|bltz(al)?l?|'
+              + 'bnel?|cl[oz]|divu?|ext|ins|j(al)?|jalr(\\.hb)?|jr(\\.hb)?|lbu?|lhu?|'
+              + 'll|lui|lw[lr]?|maddu?|mfhi|mflo|movn|movz|move|msubu?|mthi|mtlo|mul|'
+              + 'multu?|nop|nor|ori?|rotrv?|sb|sc|se[bh]|sh|sllv?|slti?u?|srav?|'
+              + 'srlv?|subu?|sw[lr]?|xori?|wsbh|'
+              // floating-point instructions
+              + 'abs\\.[sd]|add\\.[sd]|alnv.ps|bc1[ft]l?|'
+              + 'c\\.(s?f|un|u?eq|[ou]lt|[ou]le|ngle?|seq|l[et]|ng[et])\\.[sd]|'
+              + '(ceil|floor|round|trunc)\\.[lw]\\.[sd]|cfc1|cvt\\.d\\.[lsw]|'
+              + 'cvt\\.l\\.[dsw]|cvt\\.ps\\.s|cvt\\.s\\.[dlw]|cvt\\.s\\.p[lu]|cvt\\.w\\.[dls]|'
+              + 'div\\.[ds]|ldx?c1|luxc1|lwx?c1|madd\\.[sd]|mfc1|mov[fntz]?\\.[ds]|'
+              + 'msub\\.[sd]|mth?c1|mul\\.[ds]|neg\\.[ds]|nmadd\\.[ds]|nmsub\\.[ds]|'
+              + 'p[lu][lu]\\.ps|recip\\.fmt|r?sqrt\\.[ds]|sdx?c1|sub\\.[ds]|suxc1|'
+              + 'swx?c1|'
+              // system control instructions
+              + 'break|cache|d?eret|[de]i|ehb|mfc0|mtc0|pause|prefx?|rdhwr|'
+              + 'rdpgpr|sdbbp|ssnop|synci?|syscall|teqi?|tgei?u?|tlb(p|r|w[ir])|'
+              + 'tlti?u?|tnei?|wait|wrpgpr'
+          + ')',
+          end: '\\s'
+        },
+        // lines ending with ; or # aren't really comments, probably auto-detect fail
+        hljs.COMMENT('[;#](?!\\s*$)', '$'),
+        hljs.C_BLOCK_COMMENT_MODE,
+        hljs.QUOTE_STRING_MODE,
         {
           className: 'string',
-          contains: [
-            hljs.BACKSLASH_ESCAPE,
-            VAR
-          ],
-          variants: [
-            {
-              begin: /"/,
-              end: /"/
-            },
-            {
-              begin: /'/,
-              end: /'/
-            }
-          ]
-        },
-        // this swallows entire URLs to avoid detecting numbers within
-        {
-          begin: '([a-z]+):/',
-          end: '\\s',
-          endsWithParent: true,
-          excludeEnd: true,
-          contains: [ VAR ]
-        },
-        {
-          className: 'regexp',
-          contains: [
-            hljs.BACKSLASH_ESCAPE,
-            VAR
-          ],
-          variants: [
-            {
-              begin: "\\s\\^",
-              end: "\\s|\\{|;",
-              returnEnd: true
-            },
-            // regexp locations (~, ~*)
-            {
-              begin: "~\\*?\\s+",
-              end: "\\s|\\{|;",
-              returnEnd: true
-            },
-            // *.example.com
-            { begin: "\\*(\\.[a-z\\-]+)+" },
-            // sub.example.*
-            { begin: "([a-z\\-]+\\.)+\\*" }
-          ]
-        },
-        // IP
-        {
-          className: 'number',
-          begin: '\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}(:\\d{1,5})?\\b'
-        },
-        // units
-        {
-          className: 'number',
-          begin: '\\b\\d+[kKmMgGdshdwy]?\\b',
-          relevance: 0
-        },
-        VAR
-      ]
-    };
-
-    return {
-      name: 'Nginx config',
-      aliases: [ 'nginxconf' ],
-      contains: [
-        hljs.HASH_COMMENT_MODE,
-        {
-          beginKeywords: "upstream location",
-          end: /;|\{/,
-          contains: DEFAULT.contains,
-          keywords: { section: "upstream location" }
-        },
-        {
-          className: 'section',
-          begin: regex.concat(hljs.UNDERSCORE_IDENT_RE + regex.lookahead(/\s+\{/)),
+          begin: '\'',
+          end: '[^\\\\]\'',
           relevance: 0
         },
         {
-          begin: regex.lookahead(hljs.UNDERSCORE_IDENT_RE + '\\s'),
-          end: ';|\\{',
-          contains: [
-            {
-              className: 'attribute',
-              begin: hljs.UNDERSCORE_IDENT_RE,
-              starts: DEFAULT
-            }
+          className: 'title',
+          begin: '\\|',
+          end: '\\|',
+          illegal: '\\n',
+          relevance: 0
+        },
+        {
+          className: 'number',
+          variants: [
+            { // hex
+              begin: '0x[0-9a-f]+' },
+            { // bare number
+              begin: '\\b-?\\d+' }
+          ],
+          relevance: 0
+        },
+        {
+          className: 'symbol',
+          variants: [
+            { // GNU MIPS syntax
+              begin: '^\\s*[a-z_\\.\\$][a-z0-9_\\.\\$]+:' },
+            { // numbered local labels
+              begin: '^\\s*[0-9]+:' },
+            { // number local label reference (backwards, forwards)
+              begin: '[0-9]+[bf]' }
           ],
           relevance: 0
         }
       ],
-      illegal: '[^\\s\\}\\{]'
+      // forward slashes are not allowed
+      illegal: /\//
     };
   }
 
-  return nginx;
+  return mipsasm;
 
 })();
 
-    hljs.registerLanguage('nginx', hljsGrammar);
-  })();/*! `powershell` grammar compiled for Highlight.js 11.9.0 */
+    hljs.registerLanguage('mipsasm', hljsGrammar);
+  })();/*! `plaintext` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
 
   /*
-  Language: PowerShell
-  Description: PowerShell is a task-based command-line shell and scripting language built on .NET.
-  Author: David Mohundro <david@mohundro.com>
-  Contributors: Nicholas Blumhardt <nblumhardt@nblumhardt.com>, Victor Zhou <OiCMudkips@users.noreply.github.com>, Nicolas Le Gall <contact@nlegall.fr>
-  Website: https://docs.microsoft.com/en-us/powershell/
-  Category: scripting
+  Language: Plain text
+  Author: Egor Rogov (e.rogov@postgrespro.ru)
+  Description: Plain text without any highlighting.
+  Category: common
   */
 
-  function powershell(hljs) {
-    const TYPES = [
-      "string",
-      "char",
-      "byte",
-      "int",
-      "long",
-      "bool",
-      "decimal",
-      "single",
-      "double",
-      "DateTime",
-      "xml",
-      "array",
-      "hashtable",
-      "void"
-    ];
-
-    // https://docs.microsoft.com/en-us/powershell/scripting/developer/cmdlet/approved-verbs-for-windows-powershell-commands
-    const VALID_VERBS =
-      'Add|Clear|Close|Copy|Enter|Exit|Find|Format|Get|Hide|Join|Lock|'
-      + 'Move|New|Open|Optimize|Pop|Push|Redo|Remove|Rename|Reset|Resize|'
-      + 'Search|Select|Set|Show|Skip|Split|Step|Switch|Undo|Unlock|'
-      + 'Watch|Backup|Checkpoint|Compare|Compress|Convert|ConvertFrom|'
-      + 'ConvertTo|Dismount|Edit|Expand|Export|Group|Import|Initialize|'
-      + 'Limit|Merge|Mount|Out|Publish|Restore|Save|Sync|Unpublish|Update|'
-      + 'Approve|Assert|Build|Complete|Confirm|Deny|Deploy|Disable|Enable|Install|Invoke|'
-      + 'Register|Request|Restart|Resume|Start|Stop|Submit|Suspend|Uninstall|'
-      + 'Unregister|Wait|Debug|Measure|Ping|Repair|Resolve|Test|Trace|Connect|'
-      + 'Disconnect|Read|Receive|Send|Write|Block|Grant|Protect|Revoke|Unblock|'
-      + 'Unprotect|Use|ForEach|Sort|Tee|Where';
-
-    const COMPARISON_OPERATORS =
-      '-and|-as|-band|-bnot|-bor|-bxor|-casesensitive|-ccontains|-ceq|-cge|-cgt|'
-      + '-cle|-clike|-clt|-cmatch|-cne|-cnotcontains|-cnotlike|-cnotmatch|-contains|'
-      + '-creplace|-csplit|-eq|-exact|-f|-file|-ge|-gt|-icontains|-ieq|-ige|-igt|'
-      + '-ile|-ilike|-ilt|-imatch|-in|-ine|-inotcontains|-inotlike|-inotmatch|'
-      + '-ireplace|-is|-isnot|-isplit|-join|-le|-like|-lt|-match|-ne|-not|'
-      + '-notcontains|-notin|-notlike|-notmatch|-or|-regex|-replace|-shl|-shr|'
-      + '-split|-wildcard|-xor';
-
-    const KEYWORDS = {
-      $pattern: /-?[A-z\.\-]+\b/,
-      keyword:
-        'if else foreach return do while until elseif begin for trap data dynamicparam '
-        + 'end break throw param continue finally in switch exit filter try process catch '
-        + 'hidden static parameter',
-      // "echo" relevance has been set to 0 to avoid auto-detect conflicts with shell transcripts
-      built_in:
-        'ac asnp cat cd CFS chdir clc clear clhy cli clp cls clv cnsn compare copy cp '
-        + 'cpi cpp curl cvpa dbp del diff dir dnsn ebp echo|0 epal epcsv epsn erase etsn exsn fc fhx '
-        + 'fl ft fw gal gbp gc gcb gci gcm gcs gdr gerr ghy gi gin gjb gl gm gmo gp gps gpv group '
-        + 'gsn gsnp gsv gtz gu gv gwmi h history icm iex ihy ii ipal ipcsv ipmo ipsn irm ise iwmi '
-        + 'iwr kill lp ls man md measure mi mount move mp mv nal ndr ni nmo npssc nsn nv ogv oh '
-        + 'popd ps pushd pwd r rbp rcjb rcsn rd rdr ren ri rjb rm rmdir rmo rni rnp rp rsn rsnp '
-        + 'rujb rv rvpa rwmi sajb sal saps sasv sbp sc scb select set shcm si sl sleep sls sort sp '
-        + 'spjb spps spsv start stz sujb sv swmi tee trcm type wget where wjb write'
-      // TODO: 'validate[A-Z]+' can't work in keywords
-    };
-
-    const TITLE_NAME_RE = /\w[\w\d]*((-)[\w\d]+)*/;
-
-    const BACKTICK_ESCAPE = {
-      begin: '`[\\s\\S]',
-      relevance: 0
-    };
-
-    const VAR = {
-      className: 'variable',
-      variants: [
-        { begin: /\$\B/ },
-        {
-          className: 'keyword',
-          begin: /\$this/
-        },
-        { begin: /\$[\w\d][\w\d_:]*/ }
-      ]
-    };
-
-    const LITERAL = {
-      className: 'literal',
-      begin: /\$(null|true|false)\b/
-    };
-
-    const QUOTE_STRING = {
-      className: "string",
-      variants: [
-        {
-          begin: /"/,
-          end: /"/
-        },
-        {
-          begin: /@"/,
-          end: /^"@/
-        }
-      ],
-      contains: [
-        BACKTICK_ESCAPE,
-        VAR,
-        {
-          className: 'variable',
-          begin: /\$[A-z]/,
-          end: /[^A-z]/
-        }
-      ]
-    };
-
-    const APOS_STRING = {
-      className: 'string',
-      variants: [
-        {
-          begin: /'/,
-          end: /'/
-        },
-        {
-          begin: /@'/,
-          end: /^'@/
-        }
-      ]
-    };
-
-    const PS_HELPTAGS = {
-      className: "doctag",
-      variants: [
-        /* no paramater help tags */
-        { begin: /\.(synopsis|description|example|inputs|outputs|notes|link|component|role|functionality)/ },
-        /* one parameter help tags */
-        { begin: /\.(parameter|forwardhelptargetname|forwardhelpcategory|remotehelprunspace|externalhelp)\s+\S+/ }
-      ]
-    };
-
-    const PS_COMMENT = hljs.inherit(
-      hljs.COMMENT(null, null),
-      {
-        variants: [
-          /* single-line comment */
-          {
-            begin: /#/,
-            end: /$/
-          },
-          /* multi-line comment */
-          {
-            begin: /<#/,
-            end: /#>/
-          }
-        ],
-        contains: [ PS_HELPTAGS ]
-      }
-    );
-
-    const CMDLETS = {
-      className: 'built_in',
-      variants: [ { begin: '('.concat(VALID_VERBS, ')+(-)[\\w\\d]+') } ]
-    };
-
-    const PS_CLASS = {
-      className: 'class',
-      beginKeywords: 'class enum',
-      end: /\s*[{]/,
-      excludeEnd: true,
-      relevance: 0,
-      contains: [ hljs.TITLE_MODE ]
-    };
-
-    const PS_FUNCTION = {
-      className: 'function',
-      begin: /function\s+/,
-      end: /\s*\{|$/,
-      excludeEnd: true,
-      returnBegin: true,
-      relevance: 0,
-      contains: [
-        {
-          begin: "function",
-          relevance: 0,
-          className: "keyword"
-        },
-        {
-          className: "title",
-          begin: TITLE_NAME_RE,
-          relevance: 0
-        },
-        {
-          begin: /\(/,
-          end: /\)/,
-          className: "params",
-          relevance: 0,
-          contains: [ VAR ]
-        }
-        // CMDLETS
-      ]
-    };
-
-    // Using statment, plus type, plus assembly name.
-    const PS_USING = {
-      begin: /using\s/,
-      end: /$/,
-      returnBegin: true,
-      contains: [
-        QUOTE_STRING,
-        APOS_STRING,
-        {
-          className: 'keyword',
-          begin: /(using|assembly|command|module|namespace|type)/
-        }
-      ]
-    };
-
-    // Comperison operators & function named parameters.
-    const PS_ARGUMENTS = { variants: [
-      // PS literals are pretty verbose so it's a good idea to accent them a bit.
-      {
-        className: 'operator',
-        begin: '('.concat(COMPARISON_OPERATORS, ')\\b')
-      },
-      {
-        className: 'literal',
-        begin: /(-){1,2}[\w\d-]+/,
-        relevance: 0
-      }
-    ] };
-
-    const HASH_SIGNS = {
-      className: 'selector-tag',
-      begin: /@\B/,
-      relevance: 0
-    };
-
-    // It's a very general rule so I'll narrow it a bit with some strict boundaries
-    // to avoid any possible false-positive collisions!
-    const PS_METHODS = {
-      className: 'function',
-      begin: /\[.*\]\s*[\w]+[ ]??\(/,
-      end: /$/,
-      returnBegin: true,
-      relevance: 0,
-      contains: [
-        {
-          className: 'keyword',
-          begin: '('.concat(
-            KEYWORDS.keyword.toString().replace(/\s/g, '|'
-            ), ')\\b'),
-          endsParent: true,
-          relevance: 0
-        },
-        hljs.inherit(hljs.TITLE_MODE, { endsParent: true })
-      ]
-    };
-
-    const GENTLEMANS_SET = [
-      // STATIC_MEMBER,
-      PS_METHODS,
-      PS_COMMENT,
-      BACKTICK_ESCAPE,
-      hljs.NUMBER_MODE,
-      QUOTE_STRING,
-      APOS_STRING,
-      // PS_NEW_OBJECT_TYPE,
-      CMDLETS,
-      VAR,
-      LITERAL,
-      HASH_SIGNS
-    ];
-
-    const PS_TYPE = {
-      begin: /\[/,
-      end: /\]/,
-      excludeBegin: true,
-      excludeEnd: true,
-      relevance: 0,
-      contains: [].concat(
-        'self',
-        GENTLEMANS_SET,
-        {
-          begin: "(" + TYPES.join("|") + ")",
-          className: "built_in",
-          relevance: 0
-        },
-        {
-          className: 'type',
-          begin: /[\.\w\d]+/,
-          relevance: 0
-        }
-      )
-    };
-
-    PS_METHODS.contains.unshift(PS_TYPE);
-
+  function plaintext(hljs) {
     return {
-      name: 'PowerShell',
+      name: 'Plain text',
       aliases: [
-        "pwsh",
-        "ps",
-        "ps1"
+        'text',
+        'txt'
       ],
-      case_insensitive: true,
-      keywords: KEYWORDS,
-      contains: GENTLEMANS_SET.concat(
-        PS_CLASS,
-        PS_FUNCTION,
-        PS_USING,
-        PS_ARGUMENTS,
-        PS_TYPE
-      )
+      disableAutodetect: true
     };
   }
 
-  return powershell;
+  return plaintext;
 
 })();
 
-    hljs.registerLanguage('powershell', hljsGrammar);
+    hljs.registerLanguage('plaintext', hljsGrammar);
   })();/*! `python` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
@@ -9887,323 +9808,6 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('python-repl', hljsGrammar);
-  })();/*! `rust` grammar compiled for Highlight.js 11.9.0 */
-  (function(){
-    var hljsGrammar = (function () {
-  'use strict';
-
-  /*
-  Language: Rust
-  Author: Andrey Vlasovskikh <andrey.vlasovskikh@gmail.com>
-  Contributors: Roman Shmatov <romanshmatov@gmail.com>, Kasper Andersen <kma_untrusted@protonmail.com>
-  Website: https://www.rust-lang.org
-  Category: common, system
-  */
-
-  /** @type LanguageFn */
-  function rust(hljs) {
-    const regex = hljs.regex;
-    const FUNCTION_INVOKE = {
-      className: "title.function.invoke",
-      relevance: 0,
-      begin: regex.concat(
-        /\b/,
-        /(?!let|for|while|if|else|match\b)/,
-        hljs.IDENT_RE,
-        regex.lookahead(/\s*\(/))
-    };
-    const NUMBER_SUFFIX = '([ui](8|16|32|64|128|size)|f(32|64))\?';
-    const KEYWORDS = [
-      "abstract",
-      "as",
-      "async",
-      "await",
-      "become",
-      "box",
-      "break",
-      "const",
-      "continue",
-      "crate",
-      "do",
-      "dyn",
-      "else",
-      "enum",
-      "extern",
-      "false",
-      "final",
-      "fn",
-      "for",
-      "if",
-      "impl",
-      "in",
-      "let",
-      "loop",
-      "macro",
-      "match",
-      "mod",
-      "move",
-      "mut",
-      "override",
-      "priv",
-      "pub",
-      "ref",
-      "return",
-      "self",
-      "Self",
-      "static",
-      "struct",
-      "super",
-      "trait",
-      "true",
-      "try",
-      "type",
-      "typeof",
-      "unsafe",
-      "unsized",
-      "use",
-      "virtual",
-      "where",
-      "while",
-      "yield"
-    ];
-    const LITERALS = [
-      "true",
-      "false",
-      "Some",
-      "None",
-      "Ok",
-      "Err"
-    ];
-    const BUILTINS = [
-      // functions
-      'drop ',
-      // traits
-      "Copy",
-      "Send",
-      "Sized",
-      "Sync",
-      "Drop",
-      "Fn",
-      "FnMut",
-      "FnOnce",
-      "ToOwned",
-      "Clone",
-      "Debug",
-      "PartialEq",
-      "PartialOrd",
-      "Eq",
-      "Ord",
-      "AsRef",
-      "AsMut",
-      "Into",
-      "From",
-      "Default",
-      "Iterator",
-      "Extend",
-      "IntoIterator",
-      "DoubleEndedIterator",
-      "ExactSizeIterator",
-      "SliceConcatExt",
-      "ToString",
-      // macros
-      "assert!",
-      "assert_eq!",
-      "bitflags!",
-      "bytes!",
-      "cfg!",
-      "col!",
-      "concat!",
-      "concat_idents!",
-      "debug_assert!",
-      "debug_assert_eq!",
-      "env!",
-      "eprintln!",
-      "panic!",
-      "file!",
-      "format!",
-      "format_args!",
-      "include_bytes!",
-      "include_str!",
-      "line!",
-      "local_data_key!",
-      "module_path!",
-      "option_env!",
-      "print!",
-      "println!",
-      "select!",
-      "stringify!",
-      "try!",
-      "unimplemented!",
-      "unreachable!",
-      "vec!",
-      "write!",
-      "writeln!",
-      "macro_rules!",
-      "assert_ne!",
-      "debug_assert_ne!"
-    ];
-    const TYPES = [
-      "i8",
-      "i16",
-      "i32",
-      "i64",
-      "i128",
-      "isize",
-      "u8",
-      "u16",
-      "u32",
-      "u64",
-      "u128",
-      "usize",
-      "f32",
-      "f64",
-      "str",
-      "char",
-      "bool",
-      "Box",
-      "Option",
-      "Result",
-      "String",
-      "Vec"
-    ];
-    return {
-      name: 'Rust',
-      aliases: [ 'rs' ],
-      keywords: {
-        $pattern: hljs.IDENT_RE + '!?',
-        type: TYPES,
-        keyword: KEYWORDS,
-        literal: LITERALS,
-        built_in: BUILTINS
-      },
-      illegal: '</',
-      contains: [
-        hljs.C_LINE_COMMENT_MODE,
-        hljs.COMMENT('/\\*', '\\*/', { contains: [ 'self' ] }),
-        hljs.inherit(hljs.QUOTE_STRING_MODE, {
-          begin: /b?"/,
-          illegal: null
-        }),
-        {
-          className: 'string',
-          variants: [
-            { begin: /b?r(#*)"(.|\n)*?"\1(?!#)/ },
-            { begin: /b?'\\?(x\w{2}|u\w{4}|U\w{8}|.)'/ }
-          ]
-        },
-        {
-          className: 'symbol',
-          begin: /'[a-zA-Z_][a-zA-Z0-9_]*/
-        },
-        {
-          className: 'number',
-          variants: [
-            { begin: '\\b0b([01_]+)' + NUMBER_SUFFIX },
-            { begin: '\\b0o([0-7_]+)' + NUMBER_SUFFIX },
-            { begin: '\\b0x([A-Fa-f0-9_]+)' + NUMBER_SUFFIX },
-            { begin: '\\b(\\d[\\d_]*(\\.[0-9_]+)?([eE][+-]?[0-9_]+)?)'
-                     + NUMBER_SUFFIX }
-          ],
-          relevance: 0
-        },
-        {
-          begin: [
-            /fn/,
-            /\s+/,
-            hljs.UNDERSCORE_IDENT_RE
-          ],
-          className: {
-            1: "keyword",
-            3: "title.function"
-          }
-        },
-        {
-          className: 'meta',
-          begin: '#!?\\[',
-          end: '\\]',
-          contains: [
-            {
-              className: 'string',
-              begin: /"/,
-              end: /"/,
-              contains: [
-                hljs.BACKSLASH_ESCAPE
-              ]
-            }
-          ]
-        },
-        {
-          begin: [
-            /let/,
-            /\s+/,
-            /(?:mut\s+)?/,
-            hljs.UNDERSCORE_IDENT_RE
-          ],
-          className: {
-            1: "keyword",
-            3: "keyword",
-            4: "variable"
-          }
-        },
-        // must come before impl/for rule later
-        {
-          begin: [
-            /for/,
-            /\s+/,
-            hljs.UNDERSCORE_IDENT_RE,
-            /\s+/,
-            /in/
-          ],
-          className: {
-            1: "keyword",
-            3: "variable",
-            5: "keyword"
-          }
-        },
-        {
-          begin: [
-            /type/,
-            /\s+/,
-            hljs.UNDERSCORE_IDENT_RE
-          ],
-          className: {
-            1: "keyword",
-            3: "title.class"
-          }
-        },
-        {
-          begin: [
-            /(?:trait|enum|struct|union|impl|for)/,
-            /\s+/,
-            hljs.UNDERSCORE_IDENT_RE
-          ],
-          className: {
-            1: "keyword",
-            3: "title.class"
-          }
-        },
-        {
-          begin: hljs.IDENT_RE + '::',
-          keywords: {
-            keyword: "Self",
-            built_in: BUILTINS,
-            type: TYPES
-          }
-        },
-        {
-          className: "punctuation",
-          begin: '->'
-        },
-        FUNCTION_INVOKE
-      ]
-    };
-  }
-
-  return rust;
-
-})();
-
-    hljs.registerLanguage('rust', hljsGrammar);
   })();/*! `scss` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
@@ -11030,39 +10634,141 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('scss', hljsGrammar);
-  })();/*! `vbscript-html` grammar compiled for Highlight.js 11.9.0 */
+  })();/*! `smali` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
 
   /*
-  Language: VBScript in HTML
-  Requires: xml.js, vbscript.js
-  Author: Ivan Sagalaev <maniac@softwaremaniacs.org>
-  Description: "Bridge" language defining fragments of VBScript in HTML within <% .. %>
-  Website: https://en.wikipedia.org/wiki/VBScript
-  Category: scripting
+  Language: Smali
+  Author: Dennis Titze <dennis.titze@gmail.com>
+  Description: Basic Smali highlighting
+  Website: https://github.com/JesusFreke/smali
+  Category: assembler
   */
 
-  function vbscriptHtml(hljs) {
+  function smali(hljs) {
+    const smali_instr_low_prio = [
+      'add',
+      'and',
+      'cmp',
+      'cmpg',
+      'cmpl',
+      'const',
+      'div',
+      'double',
+      'float',
+      'goto',
+      'if',
+      'int',
+      'long',
+      'move',
+      'mul',
+      'neg',
+      'new',
+      'nop',
+      'not',
+      'or',
+      'rem',
+      'return',
+      'shl',
+      'shr',
+      'sput',
+      'sub',
+      'throw',
+      'ushr',
+      'xor'
+    ];
+    const smali_instr_high_prio = [
+      'aget',
+      'aput',
+      'array',
+      'check',
+      'execute',
+      'fill',
+      'filled',
+      'goto/16',
+      'goto/32',
+      'iget',
+      'instance',
+      'invoke',
+      'iput',
+      'monitor',
+      'packed',
+      'sget',
+      'sparse'
+    ];
+    const smali_keywords = [
+      'transient',
+      'constructor',
+      'abstract',
+      'final',
+      'synthetic',
+      'public',
+      'private',
+      'protected',
+      'static',
+      'bridge',
+      'system'
+    ];
     return {
-      name: 'VBScript in HTML',
-      subLanguage: 'xml',
+      name: 'Smali',
       contains: [
         {
-          begin: '<%',
-          end: '%>',
-          subLanguage: 'vbscript'
-        }
+          className: 'string',
+          begin: '"',
+          end: '"',
+          relevance: 0
+        },
+        hljs.COMMENT(
+          '#',
+          '$',
+          { relevance: 0 }
+        ),
+        {
+          className: 'keyword',
+          variants: [
+            { begin: '\\s*\\.end\\s[a-zA-Z0-9]*' },
+            {
+              begin: '^[ ]*\\.[a-zA-Z]*',
+              relevance: 0
+            },
+            {
+              begin: '\\s:[a-zA-Z_0-9]*',
+              relevance: 0
+            },
+            { begin: '\\s(' + smali_keywords.join('|') + ')' }
+          ]
+        },
+        {
+          className: 'built_in',
+          variants: [
+            { begin: '\\s(' + smali_instr_low_prio.join('|') + ')\\s' },
+            {
+              begin: '\\s(' + smali_instr_low_prio.join('|') + ')((-|/)[a-zA-Z0-9]+)+\\s',
+              relevance: 10
+            },
+            {
+              begin: '\\s(' + smali_instr_high_prio.join('|') + ')((-|/)[a-zA-Z0-9]+)*\\s',
+              relevance: 10
+            }
+          ]
+        },
+        {
+          className: 'class',
+          begin: 'L[^\(;:\n]*;',
+          relevance: 0
+        },
+        { begin: '[vp][0-9]+' }
       ]
     };
   }
 
-  return vbscriptHtml;
+  return smali;
 
 })();
 
-    hljs.registerLanguage('vbscript-html', hljsGrammar);
+    hljs.registerLanguage('smali', hljsGrammar);
   })();/*! `wasm` grammar compiled for Highlight.js 11.9.0 */
   (function(){
     var hljsGrammar = (function () {

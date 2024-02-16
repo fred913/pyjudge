@@ -2,14 +2,31 @@
 import builtins
 import json
 import io
+import sys
+import traceback
+from typing import Type, TypedDict
 from func_timeout import func_timeout
 from func_timeout import FunctionTimedOut
 
 
+class sandbox_module(dict):
+
+    def __getattribute__(self, k: str):
+        return self[k]
+
+
+def generate_fake_sys(stdin: io.StringIO,
+                      stdout: io.StringIO,
+                      stderr: io.StringIO | None = None):
+
+    return sandbox_module(stdin=stdin, stdout=stdout, stderr=stderr)
+
+
 class Sandbox:
+
     def __init__(self, timeout=None):
         self.generate_builtins()
-        self.print_buffer = ""
+        self.print_buffer = io.StringIO(initial_value="")
         self.input_buffer = io.StringIO(initial_value="")
         self.timeout = timeout or 4
 
@@ -34,26 +51,22 @@ class Sandbox:
         return self.input_buffer.readline().strip(" ").strip("\n")
 
     def import_module(self, name, *_):
-        # just import it
-        replist = {"json": json}
-        for k, v in replist.items():
-            if name.lower().strip() == k.lower().strip():
-                return v
-        raise ImportError("No module named '%s'" % (name, ))
+        replist = {
+            "json":
+            json,
+            "sys":
+            generate_fake_sys(self.input_buffer, self.print_buffer,
+                              self.print_buffer)
+        }
+        mod = replist.get(name, None)
+        if mod is not None:
+            return mod
+        else:
+            raise ImportError("No module named '%s'" % (name, ))
 
-    def print_(self, *a, sep=None, end=None, **_):
-        if end is None:
-            end = "\n"
-        if sep is None:
-            sep = " "
-        b = []
-        for i in a:
-            if isinstance(i, str):
-                b.append(i)
-            else:
-                b.append(repr(i))
-        self.print_buffer += sep.join(b)
-        self.print_buffer += end
+    def print_(self, *args, **kwargs):
+        kwargs.setdefault("file", self.print_buffer)
+        print(*args, **kwargs)
 
     def run(self, code):
         globals_ = {"__builtins__": self.venv_builtins}
@@ -61,9 +74,14 @@ class Sandbox:
         try:
             func_timeout(self.timeout, exec, args=(code, globals_))
         except FunctionTimedOut:
-            return "程序代码运行超时，请检查是否有死循环等逻辑错误"
+            return "程序代码运行超时，请检查是否有死循环等逻辑错误或未做优化"
         except Exception as e:
-            return "程序代码运行错误 %s：%s" % (e.__class__.__name__, str(e) or "无剩余信息")
+            frames = traceback.extract_tb(sys.exc_info()[2])
+            for _ in range(3):  # 3 frames are internal so hide them
+                frames.pop(0)
+
+            return "程序代码运行错误 (line #%d) %s：%s" % (
+                frames[-1].lineno, e.__class__.__name__, str(e) or "无剩余信息")
         return 0
 
 

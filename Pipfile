@@ -12,6 +12,7 @@ lxml = "*"
 requests = "*"
 quart = "*"
 uvicorn = "*"
+openai = "*"
 
 [dev-packages]
 ipython = "*"
