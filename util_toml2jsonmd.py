@@ -19,7 +19,7 @@ def convert_toml_to_json_md(toml_dir, output_dir):
         with open(os.path.join(output_dir, problem_id, "info.json"),
                   "w",
                   encoding="utf-8") as f:
-            json.dump(metadata, f, ensure_ascii=False, indent=4)
+            json.dump(metadata, f, ensure_ascii=False, indent=2)
 
         with open(os.path.join(output_dir, problem_id, "description.md"),
                   "w",

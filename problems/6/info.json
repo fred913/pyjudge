@@ -1,15 +1,15 @@
 {
-    "title": "初识Python - For循环",
-    "iscases": true,
-    "cases": [
-        [
-            "10057939",
-            "1"
-        ],
-        [
-            "10000011",
-            "0"
-        ]
+  "title": "初识Python - For循环",
+  "iscases": true,
+  "cases": [
+    [
+      "10057939",
+      "1"
     ],
-    "timeout": 8
+    [
+      "10000011",
+      "0"
+    ]
+  ],
+  "timeout": 8
 }

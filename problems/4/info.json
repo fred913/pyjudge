@@ -1,11 +1,11 @@
 {
-    "title": "初识Python - 输入，输出？",
-    "iscases": true,
-    "cases": [
-        [
-            "1234567890",
-            "1234567890"
-        ]
-    ],
-    "timeout": 4
+  "title": "初识Python - 输入，输出？",
+  "iscases": true,
+  "cases": [
+    [
+      "1234567890",
+      "1234567890"
+    ]
+  ],
+  "timeout": 4
 }

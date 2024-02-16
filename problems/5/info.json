@@ -1,15 +1,15 @@
 {
-    "title": "初识Python - 温度转换",
-    "iscases": true,
-    "cases": [
-        [
-            "32",
-            "0.0"
-        ],
-        [
-            "41",
-            "5.0"
-        ]
+  "title": "初识Python - 温度转换",
+  "iscases": true,
+  "cases": [
+    [
+      "32",
+      "0.0"
     ],
-    "timeout": 8
+    [
+      "41",
+      "5.0"
+    ]
+  ],
+  "timeout": 8
 }
