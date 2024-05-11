@@ -1,6 +1,5 @@
 # coding: utf-8
 
-import warnings
 import util_toml2jsonmd
 
 from typing import Callable, Coroutine
@@ -23,6 +22,7 @@ import cached
 from webutils import generate_403, generate_404
 from markdown.extensions.fenced_code import FencedCodeExtension
 from yapf.yapflib.errors import YapfError
+import jsbeautifier
 
 cache = cached.CacheMgr()
 
@@ -30,10 +30,16 @@ logging.getLogger("werkzeug").setLevel(logging.INFO)
 
 pm = problems.ProblemManager()
 app = Quart("webapp")
-app.config['SECRET_KEY'] = "testsecret123"
+app.config['SECRET_KEY'] = os.environ.get("WEBAPP_SESS_SECRET", "nosecret")
 app.config['TEMPLATES_AUTO_RELOAD'] = False
 
 app.add_template_global(pm.get_problem_list, "get_problem_list")
+
+ALLOWED_LANGUAGES = os.environ.get("ALLOWED_LANGUAGES",
+                                   "python,javascript").split(",")
+LANGMODE_REDIRECTS = {"js": "javascript", "py": "python"}
+
+app.add_template_global(ALLOWED_LANGUAGES, "ALLOWED_LANGUAGES")  # type: ignore
 
 
 @app.after_request
@@ -49,6 +55,13 @@ def get_users(limit=None):
     if limit:
         result = result[:limit]
     return result
+
+
+@app.errorhandler(NotImplementedError)
+def prevent_internal_error_leak(error: Exception):
+    import traceback
+    traceback.print_exc()
+    return generate_404()
 
 
 # @cache.cache(0.5)
@@ -129,11 +142,29 @@ async def do_problem(problem_id):
 async def do_problem_code(problem_id: int):
     if not get_userdata()[session['user_data']] >= (int(problem_id) - 1):
         return redirect("/problem/%s" % (str(problem_id), ))
+
+    mode = request.args.get("mode", None)
+    if mode is None or mode not in ALLOWED_LANGUAGES:
+        if mode is not None:
+            redirection = LANGMODE_REDIRECTS.get(mode, )
+            if redirection is None:
+                if mode.endswith(".next") and mode.split(
+                        ".")[0] in ALLOWED_LANGUAGES:
+                    redirection = ALLOWED_LANGUAGES[
+                        (ALLOWED_LANGUAGES.index(mode.split(".")[0]) + 1) %
+                        len(ALLOWED_LANGUAGES)]
+                else:
+                    redirection = ALLOWED_LANGUAGES[0]
+        else:
+            redirection = ALLOWED_LANGUAGES[0]
+        return redirect(request.path + "?mode=" + redirection)
+
     problem_id_str = str(problem_id)
     metadata = pm.get_problem_meta(problem_id_str)
     return await render_template("do_task.html",
                                  task_id=problem_id_str,
-                                 metadata=metadata)
+                                 metadata=metadata,
+                                 langmode=mode)
 
 
 @app.route("/api/content/<int:problem_id>")
@@ -157,17 +188,25 @@ async def get_subtitle(problem_id):
 
 
 @app.route("/api/submit.code/<int:problem_id>", methods=['POST'])
+@app.route("/api/submit_code_v2/<int:problem_id>/<langmode_>",
+           methods=['POST'])
 @requires_login
-async def submit_code(problem_id: int):
+async def submit_code_legacy(problem_id: int, langmode_: str | None = None):
     form = await request.form
     code = form.get("code", None)
     if code is None:
         return generate_403()
+    langmode = langmode_ or "python"
     meta = pm.get_problem_meta(problem_id)
-    print(code)
+    # print(code)
     # advanced
     for i, o in meta.get("cases"):
-        sb = sandbox.Sandbox(timeout=meta['timeout'])
+        if langmode == "python":
+            sb = sandbox.PySandbox(timeout=meta['timeout'])
+        elif langmode == "javascript":
+            sb = sandbox.JSSandbox(timeout=meta['timeout'])
+        else:
+            raise NotImplementedError
         sb.input_buffer.write(i + "\n")
         result = sb.run(code)
         if result == 0:
@@ -196,7 +235,9 @@ async def submit_code(problem_id: int):
 @requires_login
 async def format_code():
     form = await request.form
-    code = form.get("code")
+    code = form.get("code", None, str)
+    if code is None:
+        return generate_403()
     try:
         result = yapf.yapf_api.FormatCode(code, filename="<code>")[0]
         assert result
@@ -206,6 +247,20 @@ async def format_code():
             [False,
              "代码%s错误，请检查代码是否正确: %s" % (e.__class__.__name__, str(e))])
     return jsonify([True, result])
+
+
+@app.route("/api/format_v2/<lang>", methods=['POST'])
+@requires_login
+async def format_code_v2(lang: str):
+    form = await request.form
+    code = form.get("code", None, str)
+    if code is None:
+        return generate_403()
+    if lang == "python":
+        return await format_code()
+    if lang == "javascript":
+        return [True, jsbeautifier.beautify(code)]
+    raise NotImplementedError
 
 
 @app.route("/teacheradmin")

@@ -17,11 +17,17 @@
 
     <link rel="stylesheet" href="/static/do-task.css">
 
+    <script>
+        const LANGMODE = "{{langmode}}";
+    </script>
+
     <script src="/static/ace/src-min/ace.js"></script>
     <script src="/static/ace/src-min/ext-language_tools.js" defer></script>
     <script src="/static/ace/src-min/ext-elastic_tabstops_lite.js" defer></script>
     <script src="/static/ace/src-min/ext-beautify.js" defer></script>
     <script src="/static/ace/src-min/ext-code_lens.js" defer></script>
+
+    <script src="/static/js-beautify/beautify.min.js" defer></script>
     <script>
         $(() => {
             $.get("/api/content/{{ task_id }}", (d) => {
@@ -45,7 +51,7 @@
                 // first we format/validate the code
                 // by calling the api
                 format_code((code) => {
-                    $.post("/api/submit.code/{{ task_id }}", {
+                    $.post("/api/submit_code_v2/{{task_id}}/{{langmode}}", {
                         code: code
                     }, (d) => {
                         $("#code-run-status").html(`<h6>正在运行代码...</h6>`)
@@ -65,7 +71,7 @@
 
             window.editor = ace.edit("editor")
             editor.setTheme("ace/theme/chrome")
-            editor.session.setMode("ace/mode/python")
+            editor.session.setMode("ace/mode/{{langmode}}")
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableLiveAutocompletion: true,
@@ -74,9 +80,10 @@
                 enableMultiselect: true,
                 hScrollBarAlwaysVisible: true,
             })
+
             window.format_code = (success, fail) => {
                 var code = editor.getValue()
-                $.post("/api/format", {
+                $.post("/api/format_v2/{{langmode}}", {
                     code: code
                 }, (data) => {
                     if (data[0]) {
@@ -153,6 +160,16 @@
 
             <div class="mdui-prose" id="descriptions"></div>
             <hr />
+            <!-- TODO: an option to choose from languages -->
+            <div class="mdui-prose">
+                <p id="editor-notes" class="util-text-center" style="margin-top: 0; user-select: none;">当前语言模式：<a
+                        onclick="window.location.href=window.location.href+'.next';" href="#">{{langmode}}</a></p>
+                {% if langmode == "javascript" %}<p id="editor-js-notes" class="util-text-center"
+                    style="font-size: smaller; margin-top: 0; user-select: none;">检测到Javascript模式。该模式处于<abbr
+                        title="Work In Progress">WIP</abbr>实验中，不支持ES6语法。要使用<abbr
+                        title="Standard Input">stdin</abbr>（标准输入），请使用<code>console.readline</code>（接受一个可选的字符串参数，返回一个字符串，等效于Python的<code>input</code>方法）。
+                </p>{% endif %}
+            </div>
             <div class="mdui-prose" id="code-run-status" style="margin: 0; padding: 0;">
 
             </div>
