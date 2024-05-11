@@ -1,17 +1,17 @@
 # coding: utf-8
-from abc import abstractmethod
 import base64
 import builtins
-import json
 import io
+import json
 import math
 import sys
 import traceback
+from abc import abstractmethod
 from typing import Any, Type, TypedDict
-from func_timeout import func_timeout
-from func_timeout import FunctionTimedOut
+
 import js2py
 import js2py.pyjs
+from func_timeout import FunctionTimedOut, func_timeout
 
 USERCODE_EXEC_FILENAME = "<userCode>"
 

@@ -1,7 +1,8 @@
 # coding: utf-8
 # legacy JSON&MD structure
-import os
 import json
+import os
+
 from cached import CacheMgr
 
 cache = CacheMgr()

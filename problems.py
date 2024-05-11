@@ -1,9 +1,10 @@
 # coding: utf-8
 # legacy JSON&MD structure
-import os
 import json
+import os
 from threading import Lock
 from typing import Hashable, TypedDict
+
 from cached import CacheMgr
 
 cache = CacheMgr()

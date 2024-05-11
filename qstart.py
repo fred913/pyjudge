@@ -1,7 +1,9 @@
 # coding: utf-8
-import uvicorn
-import webapp
 import socket
+
+import uvicorn
+
+import webapp
 
 # ip = socket.gethostbyname(socket.gethostname())
 

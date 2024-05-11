@@ -1,6 +1,6 @@
-from functools import wraps
 import os
 import time
+from functools import wraps
 from typing import Any
 
 CACHING_ENABLED = bool(int(os.environ.get("CACHING_ENABLED", "0")))

@@ -1,28 +1,25 @@
 # coding: utf-8
 
-import util_toml2jsonmd
-
+import functools
+import json
+import logging
+import os
+import time
 from typing import Callable, Coroutine
+
+import jsbeautifier
 import markdown
+import yapf
+from markdown.extensions.fenced_code import FencedCodeExtension
+from quart import (Quart, Response, jsonify, redirect, render_template,
+                   request, send_file, session)
+from yapf.yapflib.errors import YapfError
+
+import cached
 import problems
 import sandbox
-import json
-import time
-import os
-from quart import Quart, Response, send_file
-from quart import request
-from quart import redirect
-from quart import jsonify
-from quart import session
-from quart import render_template
-import functools
-import logging
-import yapf
-import cached
+import util_toml2jsonmd
 from webutils import generate_403, generate_404
-from markdown.extensions.fenced_code import FencedCodeExtension
-from yapf.yapflib.errors import YapfError
-import jsbeautifier
 
 cache = cached.CacheMgr()
 
